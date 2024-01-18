@@ -88,3 +88,10 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+########### Mac OS X ###########
+# Mac OS X temporary files that should never be committed
+
+.DS_Store
+.AppleDouble
+.LSOverride
