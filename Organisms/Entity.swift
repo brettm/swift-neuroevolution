@@ -13,6 +13,7 @@ protocol Entity: Identifiable, Equatable {
     var position: (Double, Double) { get set }
 }
 
+
 struct Food: Entity {
     static func == (lhs: Food, rhs: Food) -> Bool {
         lhs.id == rhs.id
@@ -26,8 +27,8 @@ struct Origin: Entity {
     static func == (lhs: Origin, rhs: Origin) -> Bool {
         lhs.id == rhs.id
     }
+    var id: String = "origin"
     var energy: Float = 0.0
-    var id: String
     var position = (0.0, 0.0)
 }
 

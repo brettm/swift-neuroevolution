@@ -13,100 +13,130 @@ struct ContentView: View {
     @State var timer = DisplayLink()
     var body: some View {
         ZStack {
-            GeometryReader { proxy in
-                Chart {
-                    ForEach(sim.organisms) { organism in
-                        PointMark(x: .value("", organism.position.0), y: .value("", organism.position.1))
-                            .symbol {
-                                VStack {
-                                    Image(systemName: "triangle")
-                                        .rotationEffect(
-                                            Angle(radians: atan2(organism.velocity.0, organism.velocity.1))
-                                        )
-                                }
-                                .foregroundStyle(organism.id == sim.currentBestOrganism ? .green : .blue)
-                            }
-                    }
-                    ForEach(sim.bots) { bot in
-                        PointMark(x: .value("", bot.position.0), y: .value("", bot.position.1))
-                            .symbol {
-                                VStack {
-                                    Image(systemName: "xmark.circle")
-                                        .rotationEffect(
-                                            Angle(radians: atan2(bot.velocity.0, bot.velocity.1))
-                                        )
-                                }
-                                .foregroundStyle(.red)
-                            }
-                    }
-                    ForEach(sim.foods) { food in
-                        PointMark(x: .value("", food.position.0), y: .value("", food.position.1))
-                            .foregroundStyle(.green)
-                    }
-                }
-                .chartXScale(domain: sim.horizontalScale)
-                .chartYScale(domain: sim.verticalScale)
-//                .onTapGesture { location in
-//                    let index = getIndex(atLocation: location, gridSize: (4, 4), frameSize: proxy.size)
-//                    sim.addFood(atPosition: (index.0 - 2, -1 * (index.1 - 2)))
-//                }
+            SimulationChart(sim: sim)
                 .task {
                     timer.stop()
                     timer.start { dt in
                         sim.tick(dt)
                     }
                 }
-            }
-            VStack {
-                Text("Current generation: \(sim.generation)")
-                Text(String(format: "Elapsed: %07.2f", sim.time))
-                Spacer()
-                if let best = sim.currentBestOrganism {
-                    HStack(alignment: .bottom) {
-                        VStack {
-                            Slider(value: $timer.speed, in: 1...50, label: {
-                                Image(systemName: "gauge.with.dots.needle.bottom.100percent")
-                            }) {
-                                Image(systemName: "arrowtriangle.up")
-                            } maximumValueLabel: {
-                                Image(systemName: "arrowtriangle.down")
-                            }
-                            Spacer()
-                            List {
-                                ForEach(Array(sim.scores.enumerated().reversed()), id:\.offset) { idx, score in
-                                    HStack(alignment: .bottom){
-                                        Text("\(score.0)")
-                                        Text(String(format: "%.0f", score.1))
-                                        Text(String(format: "Avg. %.2f", score.2))
-                                    }
-                                }
-                            }
-                            .scrollContentBackground(.hidden)
-                            .frame(maxHeight: 120.0)
-                        }
-                        .frame(minWidth: 0, maxWidth: .infinity)
-                        .foregroundStyle(.green)
-                        Spacer()
-                        HStack {
-                            Spacer()
+            HUD(sim: sim, speed: $timer.speed)
+        }
+        .background(.black)
+        .foregroundStyle(.white)
+    }
+}
+
+struct SimulationChart: View {
+    var sim: Simulation
+    var body: some View {
+        GeometryReader { proxy in
+            Chart {
+                ForEach(sim.organisms) { organism in
+                    PointMark(x: .value("", organism.position.0), y: .value("", organism.position.1))
+                        .symbol {
                             VStack {
                                 Image(systemName: "triangle")
-                                Text("\(best)")
-                                Text(String(format: "Score: %.0f", sim.currentBestScore))
+                                    .rotationEffect(
+                                        Angle(radians: atan2(organism.velocity.0, organism.velocity.1))
+                                    )
+//                                Text("(\(organism.velocity.0), \(organism.velocity.1))")
+//                                Text(organism.id)
+//                                Text("\(organism.currentSpeed)")
                             }
+//                            .foregroundStyle(organism == sim.currentBestOrganism ? .green : .blue)
+                            .foregroundStyle(organism.energy > 0 ?
+                                             (organism == sim.currentBestOrganism ? .green : .blue)
+                                             : .red
+                                             
+                            )
                         }
-                        .frame(minWidth: 0, maxWidth: .infinity)
+                }
+                ForEach(sim.bots) { bot in
+                    PointMark(x: .value("", bot.position.0), y: .value("", bot.position.1))
+                        .symbol {
+                            VStack {
+                                Image(systemName: "xmark.circle")
+                                    .rotationEffect(
+                                        Angle(radians: atan2(bot.velocity.0, bot.velocity.1))
+                                    )
+//                                Text("\(bot.currentSpeed)")
+                            }
+                            .foregroundStyle(.red)
+                        }
+                }
+                ForEach(sim.foods) { food in
+                    PointMark(x: .value("", food.position.0), y: .value("", food.position.1))
                         .foregroundStyle(.green)
-                    }
-                    .padding()
                 }
             }
+            .chartXScale(domain: sim.horizontalScale)
+            .chartYScale(domain: sim.verticalScale)
+    //                .onTapGesture { location in
+    //                    let index = getIndex(atLocation: location, gridSize: (4, 4), frameSize: proxy.size)
+    //                    sim.addFood(atPosition: (index.0 - 2, -1 * (index.1 - 2)))
+    //                }
         }
     }
     
-    private func getIndex(atLocation location: CGPoint, gridSize: (Double, Double), frameSize: CGSize) -> (Double, Double) {
-        let ratio = (location.x / frameSize.width, location.y / frameSize.height)
-        return (ratio.0 * gridSize.0, ratio.1 * gridSize.1)
+//    private func getIndex(atLocation location: CGPoint, gridSize: (Double, Double), frameSize: CGSize) -> (Double, Double) {
+//        let ratio = (location.x / frameSize.width, location.y / frameSize.height)
+//        return (ratio.0 * gridSize.0, ratio.1 * gridSize.1)
+//    }
+}
+
+struct HUD: View {
+    var sim: Simulation
+    var speed: Binding<Double>
+    
+    var body: some View {
+        VStack {
+            Text("Current generation: \(sim.generation)")
+            Text(String(format: "Elapsed: %07.2f", sim.time))
+            Spacer()
+            if let best = sim.currentBestOrganism {
+                HStack(alignment: .bottom) {
+                    VStack {
+                        Slider(value: speed, in: 1...50, label: {
+                            Image(systemName: "gauge.with.dots.needle.bottom.100percent")
+                        }) {
+                            Image(systemName: "arrowtriangle.up")
+                        } maximumValueLabel: {
+                            Image(systemName: "arrowtriangle.down")
+                        }
+                        Spacer()
+                        List {
+                            ForEach(Array(sim.scores.enumerated().reversed()), id:\.offset) { idx, score in
+                                HStack(alignment: .bottom){
+                                    Text("Gen \(score.gen)")
+                                    Text(String(format: "Best %.0f", score.bestScore ?? 0.0))
+                                    Text(String(format: "Avg. %.2f", score.avgScore))
+                                    Text(String(format: "Bots. %.2f", score.botsScore ?? 0.0)).foregroundStyle(.red)
+                                    Text("+\(score.breedableCount)").foregroundStyle(.blue)
+                                }
+                            }
+                            .listRowBackground(Color.clear)
+                        }
+                        .scrollContentBackground(.hidden)
+                        .frame(maxHeight: 120.0)
+                    }
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .foregroundStyle(.green)
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        VStack {
+                            Image(systemName: "triangle")
+                            Text("\(best.id)")
+                            Text(String(format: "Score: %.2f", best.energy))
+                        }
+                    }
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .foregroundStyle(.green)
+                }
+                .padding()
+            }
+        }
     }
 }
 
