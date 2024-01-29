@@ -47,7 +47,7 @@ struct SimulationChart: View {
 //                            .foregroundStyle(organism == sim.currentBestOrganism ? .green : .blue)
                             .foregroundStyle(organism.energy > 0 ?
                                              (organism == sim.currentBestOrganism ? .green : .blue)
-                                             : .red
+                                             : .black
                                              
                             )
                         }

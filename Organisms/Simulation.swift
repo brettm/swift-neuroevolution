@@ -75,15 +75,15 @@ class Simulation {
     public func tick(_ dt: TimeInterval = 1/30.0) {
         time += dt
         
+        updateOrgPositions()
+        updateOrgFriction(dt)
+        updateOrgScore()
+        
         if time > evolutionTime {
             evolve()
             resetSim()
             generation += 1
         }
-        
-        updateOrgPositions()
-        updateOrgFriction(dt)
-        updateOrgScore()
         
         if foods.count < maxFood {
             addFood(atPosition: (.random(in: horizontalSpawnScale), .random(in: verticalSpawnScale)))
@@ -93,13 +93,19 @@ class Simulation {
         updateOrganisms(dt: dt)
     }
     
+    public func addFood(atPosition position: (Double, Double)) {
+        foods.append(Food(id: "\(time)", position: position))
+    }
+    
     private func resetSim() {
         foods.removeAll()
         time = 0.0
         self.currentBestOrganism = nil
         self.resetBots()
     }
-    
+}
+
+extension Simulation {
     private func updateOrganisms(dt: TimeInterval) {
         
         updateOrgGoals()
@@ -145,12 +151,11 @@ class Simulation {
         }
     }
     
-    public func updateOrgScore() {
+    private func updateOrgScore() {
         for (idx, organism) in organisms.enumerated() {
             for target in organism.targets {
                 if let food = target.0 as? Food,
-                   target.1 > 0,
-                   target.1 < 0.07 {
+                   target.1 > 0, target.1 < 0.07 {
                     
                     foods.removeAll(where: { $0 == food})
                     organisms[idx].energy += 1
@@ -167,15 +172,27 @@ class Simulation {
             organisms[idx].threatDistance = -1
             
             
-//            if !organisms[idx].isInRange(horizontal: horizontalSpawnScale, vertical: verticalSpawnScale) {
-//                organisms[idx].energy -= Float(0.001 * distance(p1: organisms[idx].position, p2: (0, 0) ))
-//            }
+            if !organisms[idx].isInRange(horizontal: horizontalScale, vertical: verticalScale) {
+                organisms[idx].energy -= Float(0.001 * distance(p1: organisms[idx].position, p2: (0, 0) ))
+            }
 //
 //            if organisms[idx].energy < 0 { organisms[idx].energy = 0 }
         }
     }
     
-    public func resetBots() {
+    private func updateOrgPositions() {
+        for (idx, _) in organisms.enumerated() {
+            organisms[idx].position = (
+                organisms[idx].position.0 + organisms[idx].velocity.0,
+                organisms[idx].position.1 + organisms[idx].velocity.1
+            )
+        }
+    }
+}
+
+extension Simulation {
+    
+    private func resetBots() {
         for (idx, _) in bots.enumerated() {
             bots[idx].position = (.random(in: horizontalSpawnScale), .random(in: verticalSpawnScale))
             bots[idx].velocity = (0.0, 0.0)
@@ -183,9 +200,9 @@ class Simulation {
         }
     }
     
-    public func updateBots(dt: TimeInterval) {
+    private func updateBots(dt: TimeInterval) {
         
-        let visible = organisms.filterByRange(horizontal: horizontalSpawnScale, 
+        let visible = organisms.filterByRange(horizontal: horizontalSpawnScale,
                                               vertical: verticalSpawnScale)
 
         for (bot_idx, _) in bots.enumerated() {
@@ -219,19 +236,6 @@ class Simulation {
                 bots[bot_idx].target = nil
                 bots[bot_idx].targetDistance = -1
             }
-        }
-    }
-    
-    public func addFood(atPosition position: (Double, Double)) {
-        foods.append(Food(id: "\(time)", position: position))
-    }
-    
-    private func updateOrgPositions() {
-        for (idx, _) in organisms.enumerated() {
-            organisms[idx].position = (
-                organisms[idx].position.0 + organisms[idx].velocity.0,
-                organisms[idx].position.1 + organisms[idx].velocity.1
-            )
         }
     }
     

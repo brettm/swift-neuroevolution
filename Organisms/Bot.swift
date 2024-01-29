@@ -23,7 +23,7 @@ struct Bot: Entity, Identifiable {
     var velocity = (0.0, 0.0)
 
     var maxSpeed = 0.002 + .random(in: 0...0.001)
-    var maxAcceleration = 0.0005 + .random(in: 0...0.0005)
+    var maxAcceleration = 0.001 + .random(in: 0...0.001)
     
     init(id: String, position: (Double, Double) = (0, 0)) {
         self.id = id

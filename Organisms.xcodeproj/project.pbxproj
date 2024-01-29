@@ -97,12 +97,12 @@
 				EC8378672B53F45A004D6ECE /* Preview Content */,
 				EC83786F2B55E761004D6ECE /* DisplayLink.swift */,
 				EC8378712B55EA66004D6ECE /* Math.swift */,
-				EC8378732B55EACF004D6ECE /* Entity.swift */,
 				EC8378752B55EAFA004D6ECE /* Simulation.swift */,
 				EC8378862B567C78004D6ECE /* OrganismModel.swift */,
-				ECD2CDE22B611659006D52EA /* Extensions.swift */,
+				EC8378732B55EACF004D6ECE /* Entity.swift */,
 				EC8378772B55EB43004D6ECE /* Organism.swift */,
 				ECD2CDE42B6117E2006D52EA /* Bot.swift */,
+				ECD2CDE22B611659006D52EA /* Extensions.swift */,
 			);
 			path = Organisms;
 			sourceTree = "<group>";
