@@ -9,8 +9,8 @@ import Foundation
 import Accelerate
 
 private struct MLPNode {
-    static let inputNodesCount = 6
-    static let hiddenNodesCount = 36
+    static let inputNodesCount = 9
+    static let hiddenNodesCount = 81
     static let outputNodesCount = 2
 }
 
@@ -35,7 +35,7 @@ struct OrganismModel {
         inputToHiddenWeights: [Float] = ( 0..<MLPWeight.inputToHiddenWeightsCount ).map { _ in .random(in: -1.0...1.0) },
         inputToHiddenBias: [Float] = ( 0..<MLPWeight.inputToHiddenBiasCount ).map { _ in .random(in: -1.0...1.0) },
         hiddenToOutputWeights: [Float] = ( 0..<MLPWeight.hiddenToOutputWeightsCount ).map { _ in .random(in: -1.0...1.0) },
-        hiddenToOutputBias: [Float] = ( 0..<MLPWeight.hiddenToOutputBiasCount ).map { _ in .random(in: -1.0...1.0) }) {
+        hiddenToOutputBias: [Float] = ( 0..<MLPWeight.hiddenToOutputBiasCount ).map { _ in .random(in: -0.1...0.1) }) {
             self.inputToHiddenWeights = inputToHiddenWeights
             self.inputToHiddenBias = inputToHiddenBias
             self.hiddenToOutputWeights = hiddenToOutputWeights
@@ -72,7 +72,9 @@ struct OrganismModel {
     // TODO: Update to latest BNNS framework
     @discardableResult
     mutating func createNetwork() -> Bool {
-        let activation = BNNSActivation(function: BNNSActivationFunction.tanh, alpha: 0, beta: 0)
+        
+        let hiddenActivation = BNNSActivation(function: BNNSActivationFunction.identity, alpha: 0, beta: 0)
+        let outActivation = BNNSActivation(function: BNNSActivationFunction.tanh, alpha: 0, beta: 0)
         
         _ = inputToHiddenWeights.withUnsafeBufferPointer { inputToHiddenWeightsBP in
             inputToHiddenBias.withUnsafeBufferPointer { inputToHiddenBiasDataBP in
@@ -97,11 +99,11 @@ struct OrganismModel {
                         
                         var inputToHiddenParams = BNNSFullyConnectedLayerParameters(
                             in_size: MLPNode.inputNodesCount, out_size: MLPNode.hiddenNodesCount, weights: inputToHiddenWeightsData,
-                            bias: inputToHiddenBiasData, activation: activation)
+                            bias: inputToHiddenBiasData, activation: hiddenActivation)
                         
                         var hiddenToOutputParams = BNNSFullyConnectedLayerParameters(
                             in_size: MLPNode.hiddenNodesCount, out_size: MLPNode.outputNodesCount, weights: hiddenToOutputWeightsData,
-                            bias: hiddenToOutputBiasData, activation: activation)
+                            bias: hiddenToOutputBiasData, activation: outActivation)
                         
                         var inputDesc = BNNSVectorDescriptor(
                             size: MLPNode.inputNodesCount, data_type: BNNSDataType.float, data_scale: 0, data_bias: 0)

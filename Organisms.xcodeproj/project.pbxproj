@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8BA913C02B77BAD000290B3B /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 8BA913BF2B77BAD000290B3B /* Collections */; };
+		8BA913C22B77BAD000290B3B /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 8BA913C12B77BAD000290B3B /* DequeModule */; };
 		EC8378612B53F459004D6ECE /* OrganismsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378602B53F459004D6ECE /* OrganismsApp.swift */; };
 		EC8378632B53F459004D6ECE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378622B53F459004D6ECE /* ContentView.swift */; };
 		EC8378652B53F45A004D6ECE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC8378642B53F45A004D6ECE /* Assets.xcassets */; };
 		EC8378692B53F45A004D6ECE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC8378682B53F45A004D6ECE /* Preview Assets.xcassets */; };
-		EC8378702B55E761004D6ECE /* DisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC83786F2B55E761004D6ECE /* DisplayLink.swift */; };
+		EC8378702B55E761004D6ECE /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC83786F2B55E761004D6ECE /* Timer.swift */; };
 		EC8378722B55EA66004D6ECE /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378712B55EA66004D6ECE /* Math.swift */; };
 		EC8378742B55EACF004D6ECE /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378732B55EACF004D6ECE /* Entity.swift */; };
 		EC8378762B55EAFA004D6ECE /* Simulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378752B55EAFA004D6ECE /* Simulation.swift */; };
@@ -39,7 +41,7 @@
 		EC8378642B53F45A004D6ECE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EC8378662B53F45A004D6ECE /* Organisms.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Organisms.entitlements; sourceTree = "<group>"; };
 		EC8378682B53F45A004D6ECE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		EC83786F2B55E761004D6ECE /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
+		EC83786F2B55E761004D6ECE /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 		EC8378712B55EA66004D6ECE /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		EC8378732B55EACF004D6ECE /* Entity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
 		EC8378752B55EAFA004D6ECE /* Simulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulation.swift; sourceTree = "<group>"; };
@@ -56,6 +58,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BA913C02B77BAD000290B3B /* Collections in Frameworks */,
+				8BA913C22B77BAD000290B3B /* DequeModule in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,7 +99,7 @@
 				EC8378642B53F45A004D6ECE /* Assets.xcassets */,
 				EC8378662B53F45A004D6ECE /* Organisms.entitlements */,
 				EC8378672B53F45A004D6ECE /* Preview Content */,
-				EC83786F2B55E761004D6ECE /* DisplayLink.swift */,
+				EC83786F2B55E761004D6ECE /* Timer.swift */,
 				EC8378712B55EA66004D6ECE /* Math.swift */,
 				EC8378752B55EAFA004D6ECE /* Simulation.swift */,
 				EC8378862B567C78004D6ECE /* OrganismModel.swift */,
@@ -139,6 +143,10 @@
 			dependencies = (
 			);
 			name = Organisms;
+			packageProductDependencies = (
+				8BA913BF2B77BAD000290B3B /* Collections */,
+				8BA913C12B77BAD000290B3B /* DequeModule */,
+			);
 			productName = Organisms;
 			productReference = EC83785D2B53F459004D6ECE /* Organisms.app */;
 			productType = "com.apple.product-type.application";
@@ -189,6 +197,9 @@
 				Base,
 			);
 			mainGroup = EC8378542B53F459004D6ECE;
+			packageReferences = (
+				8BA913BE2B77BAD000290B3B /* XCRemoteSwiftPackageReference "swift-collections" */,
+			);
 			productRefGroup = EC83785E2B53F459004D6ECE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -227,7 +238,7 @@
 				ECD2CDE32B611659006D52EA /* Extensions.swift in Sources */,
 				EC8378872B567C78004D6ECE /* OrganismModel.swift in Sources */,
 				EC8378742B55EACF004D6ECE /* Entity.swift in Sources */,
-				EC8378702B55E761004D6ECE /* DisplayLink.swift in Sources */,
+				EC8378702B55E761004D6ECE /* Timer.swift in Sources */,
 				EC8378782B55EB43004D6ECE /* Organism.swift in Sources */,
 				EC8378612B53F459004D6ECE /* OrganismsApp.swift in Sources */,
 				EC8378762B55EAFA004D6ECE /* Simulation.swift in Sources */,
@@ -513,6 +524,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8BA913BE2B77BAD000290B3B /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8BA913BF2B77BAD000290B3B /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BA913BE2B77BAD000290B3B /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		8BA913C12B77BAD000290B3B /* DequeModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BA913BE2B77BAD000290B3B /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = DequeModule;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EC8378552B53F459004D6ECE /* Project object */;
 }

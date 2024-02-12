@@ -10,17 +10,25 @@ import Charts
 
 struct ContentView: View {
     @State var sim = Simulation()
-    @State var timer = DisplayLink()
+//    @State var simTimer = SimulationDisplayTimer()
+    @State var simSpeed = 1.0
     var body: some View {
         ZStack {
             SimulationChart(sim: sim)
-                .task {
-                    timer.stop()
-                    timer.start { dt in
-                        sim.tick(dt)
-                    }
+            HUD(sim: sim, speed: $simSpeed)
+        }
+        .task {
+//            simTimer.stop()
+//            simTimer.start { dt in
+//                await MainActor.run {
+//                    sim.tick(dt: dt)
+//                }
+//            }
+            while(true) {
+                await MainActor.run {
+                    sim.tick(dt: 1/12)
                 }
-            HUD(sim: sim, speed: $timer.speed)
+            }
         }
         .background(.black)
         .foregroundStyle(.white)
@@ -42,7 +50,7 @@ struct SimulationChart: View {
                                     )
 //                                Text("(\(organism.velocity.0), \(organism.velocity.1))")
 //                                Text(organism.id)
-//                                Text("\(organism.currentSpeed)")
+                                Text("\(organism.currentSpeed)")
                             }
 //                            .foregroundStyle(organism == sim.currentBestOrganism ? .green : .blue)
                             .foregroundStyle(organism.energy > 0 ?
@@ -56,10 +64,12 @@ struct SimulationChart: View {
                     PointMark(x: .value("", bot.position.0), y: .value("", bot.position.1))
                         .symbol {
                             VStack {
-                                Image(systemName: "xmark.circle")
+//                                Image(systemName: "arrowshape.up.circle")
+                                Text("🫦")
                                     .rotationEffect(
                                         Angle(radians: atan2(bot.velocity.0, bot.velocity.1))
                                     )
+                                    .scaleEffect(x: 1.0 + CGFloat(bot.energy) / 25.0, y: 1.0 + CGFloat(bot.energy) / 25.0, anchor: .center)
 //                                Text("\(bot.currentSpeed)")
                             }
                             .foregroundStyle(.red)
@@ -97,8 +107,8 @@ struct HUD: View {
             if let best = sim.currentBestOrganism {
                 HStack(alignment: .bottom) {
                     VStack {
-                        Slider(value: speed, in: 1...50, label: {
-                            Image(systemName: "gauge.with.dots.needle.bottom.100percent")
+                        Slider(value: speed, in: 1...20, label: {
+                            Text("🧭")
                         }) {
                             Image(systemName: "arrowtriangle.up")
                         } maximumValueLabel: {

@@ -12,83 +12,87 @@ struct Organism: Entity {
         return lhs.id == rhs.id
     }
     
+    var id: String
+    var energy: Float = 1.0
+    var position = (0.0, 0.0)
+    private(set) var velocity = (0.0, 0.0)
+    
+    let maxSpeed = 0.1//+ .random(in: 0...0.001)
+    let maxAcceleration = 0.01 //+ .random(in: 0...0.001)
+    
     internal init(id: String, model: OrganismModel = OrganismModel(), position: (Double, Double) = (0.0, 0.0)) {
         self.id = id
         self.position = position
         self.model = model
     }
     
-    var id: String
-    var energy: Float = 1.0
+    internal var targetId: String?
+    internal var targetPosition = (0.0, 0.0)
     
-    var maxTargets = 1
-    var targets: [((any Entity), Double)] = []
-   
-    var threatPosition = (0.0, 0.0)
-    var threatDistance: Double = -1.0
+    internal var target2Id: String?
+    internal var target2Position = (0.0, 0.0)
     
-    var position = (0.0, 0.0)
-    var velocity = (0.0, 0.0)
+    internal var threatId: String?
+    internal var threatPosition = (0.0, 0.0)
     
-    let maxSpeed = 0.0125 + .random(in: 0...0.0125)
-    let maxAcceleration = 0.0025 + .random(in: 0...0.0025)
+    internal var threat2Id: String?
+    internal var threat2Position = (0.0, 0.0)
     
-    var model: OrganismModel
+    internal var model: OrganismModel
     
-    var currentSpeed: Double {
+    public var currentSpeed: Double {
         return magnitude(velocity)
+    }
+    
+    mutating func scaleVelocity(_ scalar: Double) {
+        self.velocity = (
+            self.velocity.0 * scalar,
+            self.velocity.1 * scalar
+        )
     }
     
     mutating func think(dt: Double) {
         
-//        if let target = self.target {
-//            // calculate a normalized direction vector pointing from the organism's position (p1) to the target's position. Normalizing ensures that the vector only indicates the direction without changing the organism's maximum speed.
-//            let targetDirection = normalise(vector(p1: self.position, p2: target.position))
-//            let threatDirection = normalise(vector(p1: self.position, p2: threatPosition))
-//            // Input layer of the MLP that takes the normalised direction vector and distance to the closest target and threat
-//            let input = [
-//                Float(targetDirection.0), Float(targetDirection.1), Float(targetDistance),
-//                Float(threatDirection.0), Float(threatDirection.1), Float(threatDistance)
-//            ]
-//            // Output of the neural net will be a veclocity vector used to steer the entitity towards its target
-//            let velocity = model.predict(input)
-//            let (ax, ay) = (Double(velocity[0]), Double(velocity[1]))
-//            self.velocity = (
-//                (self.velocity.0 + ax * dt * self.maxAcceleration).clamped(to: -maxSpeed...maxSpeed),
-//                (self.velocity.1 + ay * dt * self.maxAcceleration).clamped(to: -maxSpeed...maxSpeed)
-//            )
-//        }
-        
-     
-        // calculate a normalized direction vector pointing from the organism's position (p1) to the target's position. Normalizing ensures that the vector only indicates the direction without changing the organism's maximum speed.
-//            let targetDirection = normalise(vector(p1: self.position, p2: target.position))
-        let threatDirection = normalise(vector(p1: self.position, p2: threatPosition))
-        // Input layer of the MLP that takes the normalised direction vector and distance to the closest target and threat
         var input = [
-            Float(threatDirection.0), Float(threatDirection.1), Float(threatDistance)
+            0.0, 0.0, -1.0,
+            0.0, 0.0, -1.0,
+            0.0, 0.0, -1.0
         ]
         
-        // Pad the number of targets if under the max input value
-        if targets.count < maxTargets {
-            for _ in (targets.count..<maxTargets) {
-                targets.append((Origin(), -1))
-            }
+        if targetId != nil {
+            let targetDirection = normalise(vector(p1: self.position, p2: targetPosition))
+            let distance = distance(p1: self.position, p2: targetPosition)
+            (input[0], input[1]) = targetDirection
+            input[2] = distance / 10.0
         }
         
-        targets.shuffle()
-        
-        for idx in (0..<maxTargets) {
-            let target = targets[idx]
-            let targetDirection = normalise(vector(p1: self.position, p2: target.0.position))
-            input += [Float(targetDirection.0), Float(targetDirection.1), Float(target.1)]
+        if threatId != nil {
+            let threatDirection = normalise(vector(p1: self.position, p2: threatPosition))
+            let distance = distance(p1: self.position, p2: threatPosition)
+            (input[3], input[4]) = threatDirection
+            input[5] = distance / 10.0
         }
-    
-        // Output of the neural net will be a veclocity vector used to steer the entitity towards its target
-        let velocity = model.predict(input)
+        
+        if target2Id != nil {
+            let targetDirection = normalise(vector(p1: self.position, p2: target2Position))
+            let distance = distance(p1: self.position, p2: target2Position)
+            (input[6], input[7]) = targetDirection
+            input[8] = distance / 10.0
+        }
+        
+//        if threat2Id != nil {
+//            let threatDirection = normalise(vector(p1: self.position, p2: threat2Position))
+//            let distance = distance(p1: self.position, p2: threat2Position)
+//            (input[6], input[7]) = threatDirection
+//            input[8] = distance / 10.0
+//        }
+//        print(input)
+        let velocity = model.predict( input.map{ Float($0) } )
+//        print(velocity)
         let (ax, ay) = (Double(velocity[0]), Double(velocity[1]))
         self.velocity = (
-            (self.velocity.0 + ax * dt * self.maxAcceleration).clamped(to: -maxSpeed...maxSpeed),
-            (self.velocity.1 + ay * dt * self.maxAcceleration).clamped(to: -maxSpeed...maxSpeed)
+            (self.velocity.0 + ax * self.maxAcceleration).clamped(to: -maxSpeed...maxSpeed),
+            (self.velocity.1 + ay * self.maxAcceleration).clamped(to: -maxSpeed...maxSpeed)
         )
     }
 }
