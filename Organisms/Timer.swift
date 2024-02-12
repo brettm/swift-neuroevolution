@@ -9,12 +9,12 @@ import Foundation
 import QuartzCore
 
 @Observable
-class DisplayLink: NSObject {
+class Timer: NSObject {
     
     private var displaylink: CADisplayLink?
     private var update: ((TimeInterval) -> Void)?
     
-    var speed: Double = 20.0
+    var speed: Double = 1.0
     
     func start(update: @escaping (TimeInterval) -> Void) {
         self.update = update
