@@ -7,25 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B9AB8352B8E598C00F71617 /* ChartContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9AB8342B8E598C00F71617 /* ChartContainer.swift */; };
+		8B9AB8372B8E599900F71617 /* HUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9AB8362B8E599900F71617 /* HUDView.swift */; };
+		8B9AB83F2B8E68DC00F71617 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9AB83E2B8E68DC00F71617 /* main.swift */; };
+		8B9AB8432B8E6A5800F71617 /* OrganismModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378862B567C78004D6ECE /* OrganismModel.swift */; };
+		8B9AB8442B8E6A7700F71617 /* Simulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378752B55EAFA004D6ECE /* Simulation.swift */; };
+		8B9AB8452B8E6AB900F71617 /* Organism.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378772B55EB43004D6ECE /* Organism.swift */; };
+		8B9AB8462B8E6AC000F71617 /* Vector2d.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378712B55EA66004D6ECE /* Vector2d.swift */; };
+		8B9AB8472B8E6AF400F71617 /* Bot.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD2CDE42B6117E2006D52EA /* Bot.swift */; };
+		8B9AB8482B8E6AF600F71617 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD2CDE22B611659006D52EA /* Extensions.swift */; };
+		8B9AB8492B8E6AFB00F71617 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378732B55EACF004D6ECE /* Entity.swift */; };
 		8BA913C02B77BAD000290B3B /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 8BA913BF2B77BAD000290B3B /* Collections */; };
 		8BA913C22B77BAD000290B3B /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 8BA913C12B77BAD000290B3B /* DequeModule */; };
+		8BAB11262B92269A0094928D /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 8BAB11252B92269A0094928D /* AsyncAlgorithms */; };
+		8BAB112E2B9614740094928D /* OrganismsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAB112D2B9614740094928D /* OrganismsTests.swift */; };
 		EC8378612B53F459004D6ECE /* OrganismsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378602B53F459004D6ECE /* OrganismsApp.swift */; };
-		EC8378632B53F459004D6ECE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378622B53F459004D6ECE /* ContentView.swift */; };
+		EC8378632B53F459004D6ECE /* SimulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378622B53F459004D6ECE /* SimulatorView.swift */; };
 		EC8378652B53F45A004D6ECE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC8378642B53F45A004D6ECE /* Assets.xcassets */; };
 		EC8378692B53F45A004D6ECE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC8378682B53F45A004D6ECE /* Preview Assets.xcassets */; };
-		EC8378702B55E761004D6ECE /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC83786F2B55E761004D6ECE /* Timer.swift */; };
-		EC8378722B55EA66004D6ECE /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378712B55EA66004D6ECE /* Math.swift */; };
+		EC8378722B55EA66004D6ECE /* Vector2d.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378712B55EA66004D6ECE /* Vector2d.swift */; };
 		EC8378742B55EACF004D6ECE /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378732B55EACF004D6ECE /* Entity.swift */; };
 		EC8378762B55EAFA004D6ECE /* Simulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378752B55EAFA004D6ECE /* Simulation.swift */; };
 		EC8378782B55EB43004D6ECE /* Organism.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378772B55EB43004D6ECE /* Organism.swift */; };
-		EC8378802B566B04004D6ECE /* OrganismsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC83787F2B566B04004D6ECE /* OrganismsTests.swift */; };
 		EC8378872B567C78004D6ECE /* OrganismModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378862B567C78004D6ECE /* OrganismModel.swift */; };
 		ECD2CDE32B611659006D52EA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD2CDE22B611659006D52EA /* Extensions.swift */; };
 		ECD2CDE52B6117E2006D52EA /* Bot.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD2CDE42B6117E2006D52EA /* Bot.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		EC8378812B566B04004D6ECE /* PBXContainerItemProxy */ = {
+		8BAB112F2B9614740094928D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EC8378552B53F459004D6ECE /* Project object */;
 			proxyType = 1;
@@ -34,50 +44,90 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		8B9AB83A2B8E68DC00F71617 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		8B9AB8342B8E598C00F71617 /* ChartContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartContainer.swift; sourceTree = "<group>"; };
+		8B9AB8362B8E599900F71617 /* HUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDView.swift; sourceTree = "<group>"; };
+		8B9AB83C2B8E68DC00F71617 /* OrganismSim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OrganismSim; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B9AB83E2B8E68DC00F71617 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		8BAB112B2B9614740094928D /* OrganismsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OrganismsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BAB112D2B9614740094928D /* OrganismsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganismsTests.swift; sourceTree = "<group>"; };
 		EC83785D2B53F459004D6ECE /* Organisms.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Organisms.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC8378602B53F459004D6ECE /* OrganismsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganismsApp.swift; sourceTree = "<group>"; };
-		EC8378622B53F459004D6ECE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		EC8378622B53F459004D6ECE /* SimulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorView.swift; sourceTree = "<group>"; };
 		EC8378642B53F45A004D6ECE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EC8378662B53F45A004D6ECE /* Organisms.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Organisms.entitlements; sourceTree = "<group>"; };
 		EC8378682B53F45A004D6ECE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		EC83786F2B55E761004D6ECE /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
-		EC8378712B55EA66004D6ECE /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
+		EC8378712B55EA66004D6ECE /* Vector2d.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector2d.swift; sourceTree = "<group>"; };
 		EC8378732B55EACF004D6ECE /* Entity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
 		EC8378752B55EAFA004D6ECE /* Simulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulation.swift; sourceTree = "<group>"; };
 		EC8378772B55EB43004D6ECE /* Organism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Organism.swift; sourceTree = "<group>"; };
-		EC83787D2B566B04004D6ECE /* OrganismsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OrganismsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EC83787F2B566B04004D6ECE /* OrganismsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganismsTests.swift; sourceTree = "<group>"; };
 		EC8378862B567C78004D6ECE /* OrganismModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganismModel.swift; sourceTree = "<group>"; };
 		ECD2CDE22B611659006D52EA /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		ECD2CDE42B6117E2006D52EA /* Bot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bot.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8B9AB8392B8E68DC00F71617 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BAB11282B9614740094928D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC83785A2B53F459004D6ECE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				8BA913C02B77BAD000290B3B /* Collections in Frameworks */,
 				8BA913C22B77BAD000290B3B /* DequeModule in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EC83787A2B566B04004D6ECE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				8BAB11262B92269A0094928D /* AsyncAlgorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B9AB83D2B8E68DC00F71617 /* OrganismSim */ = {
+			isa = PBXGroup;
+			children = (
+				8B9AB83E2B8E68DC00F71617 /* main.swift */,
+			);
+			path = OrganismSim;
+			sourceTree = "<group>";
+		};
+		8BAB112C2B9614740094928D /* OrganismsTests */ = {
+			isa = PBXGroup;
+			children = (
+				8BAB112D2B9614740094928D /* OrganismsTests.swift */,
+			);
+			path = OrganismsTests;
+			sourceTree = "<group>";
+		};
 		EC8378542B53F459004D6ECE = {
 			isa = PBXGroup;
 			children = (
 				EC83785F2B53F459004D6ECE /* Organisms */,
-				EC83787E2B566B04004D6ECE /* OrganismsTests */,
+				8B9AB83D2B8E68DC00F71617 /* OrganismSim */,
+				8BAB112C2B9614740094928D /* OrganismsTests */,
 				EC83785E2B53F459004D6ECE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -86,7 +136,8 @@
 			isa = PBXGroup;
 			children = (
 				EC83785D2B53F459004D6ECE /* Organisms.app */,
-				EC83787D2B566B04004D6ECE /* OrganismsTests.xctest */,
+				8B9AB83C2B8E68DC00F71617 /* OrganismSim */,
+				8BAB112B2B9614740094928D /* OrganismsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,12 +146,13 @@
 			isa = PBXGroup;
 			children = (
 				EC8378602B53F459004D6ECE /* OrganismsApp.swift */,
-				EC8378622B53F459004D6ECE /* ContentView.swift */,
+				EC8378622B53F459004D6ECE /* SimulatorView.swift */,
+				8B9AB8362B8E599900F71617 /* HUDView.swift */,
+				8B9AB8342B8E598C00F71617 /* ChartContainer.swift */,
 				EC8378642B53F45A004D6ECE /* Assets.xcassets */,
 				EC8378662B53F45A004D6ECE /* Organisms.entitlements */,
 				EC8378672B53F45A004D6ECE /* Preview Content */,
-				EC83786F2B55E761004D6ECE /* Timer.swift */,
-				EC8378712B55EA66004D6ECE /* Math.swift */,
+				EC8378712B55EA66004D6ECE /* Vector2d.swift */,
 				EC8378752B55EAFA004D6ECE /* Simulation.swift */,
 				EC8378862B567C78004D6ECE /* OrganismModel.swift */,
 				EC8378732B55EACF004D6ECE /* Entity.swift */,
@@ -119,17 +171,44 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		EC83787E2B566B04004D6ECE /* OrganismsTests */ = {
-			isa = PBXGroup;
-			children = (
-				EC83787F2B566B04004D6ECE /* OrganismsTests.swift */,
-			);
-			path = OrganismsTests;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		8B9AB83B2B8E68DC00F71617 /* OrganismSim */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8B9AB8402B8E68DC00F71617 /* Build configuration list for PBXNativeTarget "OrganismSim" */;
+			buildPhases = (
+				8B9AB8382B8E68DC00F71617 /* Sources */,
+				8B9AB8392B8E68DC00F71617 /* Frameworks */,
+				8B9AB83A2B8E68DC00F71617 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OrganismSim;
+			productName = OrganismSim;
+			productReference = 8B9AB83C2B8E68DC00F71617 /* OrganismSim */;
+			productType = "com.apple.product-type.tool";
+		};
+		8BAB112A2B9614740094928D /* OrganismsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8BAB11312B9614740094928D /* Build configuration list for PBXNativeTarget "OrganismsTests" */;
+			buildPhases = (
+				8BAB11272B9614740094928D /* Sources */,
+				8BAB11282B9614740094928D /* Frameworks */,
+				8BAB11292B9614740094928D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8BAB11302B9614740094928D /* PBXTargetDependency */,
+			);
+			name = OrganismsTests;
+			productName = OrganismsTests;
+			productReference = 8BAB112B2B9614740094928D /* OrganismsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		EC83785C2B53F459004D6ECE /* Organisms */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC83786C2B53F45A004D6ECE /* Build configuration list for PBXNativeTarget "Organisms" */;
@@ -146,28 +225,11 @@
 			packageProductDependencies = (
 				8BA913BF2B77BAD000290B3B /* Collections */,
 				8BA913C12B77BAD000290B3B /* DequeModule */,
+				8BAB11252B92269A0094928D /* AsyncAlgorithms */,
 			);
 			productName = Organisms;
 			productReference = EC83785D2B53F459004D6ECE /* Organisms.app */;
 			productType = "com.apple.product-type.application";
-		};
-		EC83787C2B566B04004D6ECE /* OrganismsTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EC8378852B566B04004D6ECE /* Build configuration list for PBXNativeTarget "OrganismsTests" */;
-			buildPhases = (
-				EC8378792B566B04004D6ECE /* Sources */,
-				EC83787A2B566B04004D6ECE /* Frameworks */,
-				EC83787B2B566B04004D6ECE /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				EC8378822B566B04004D6ECE /* PBXTargetDependency */,
-			);
-			name = OrganismsTests;
-			productName = OrganismsTests;
-			productReference = EC83787D2B566B04004D6ECE /* OrganismsTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -176,15 +238,18 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					8B9AB83B2B8E68DC00F71617 = {
+						CreatedOnToolsVersion = 15.2;
+					};
+					8BAB112A2B9614740094928D = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = EC83785C2B53F459004D6ECE;
+					};
 					EC83785C2B53F459004D6ECE = {
 						CreatedOnToolsVersion = 15.0.1;
-					};
-					EC83787C2B566B04004D6ECE = {
-						CreatedOnToolsVersion = 15.0.1;
-						TestTargetID = EC83785C2B53F459004D6ECE;
 					};
 				};
 			};
@@ -199,18 +264,27 @@
 			mainGroup = EC8378542B53F459004D6ECE;
 			packageReferences = (
 				8BA913BE2B77BAD000290B3B /* XCRemoteSwiftPackageReference "swift-collections" */,
+				8BAB11242B92269A0094928D /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 			);
 			productRefGroup = EC83785E2B53F459004D6ECE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				EC83785C2B53F459004D6ECE /* Organisms */,
-				EC83787C2B566B04004D6ECE /* OrganismsTests */,
+				8B9AB83B2B8E68DC00F71617 /* OrganismSim */,
+				8BAB112A2B9614740094928D /* OrganismsTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8BAB11292B9614740094928D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC83785B2B53F459004D6ECE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -220,52 +294,127 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EC83787B2B566B04004D6ECE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		8B9AB8382B8E68DC00F71617 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B9AB83F2B8E68DC00F71617 /* main.swift in Sources */,
+				8B9AB8452B8E6AB900F71617 /* Organism.swift in Sources */,
+				8B9AB8442B8E6A7700F71617 /* Simulation.swift in Sources */,
+				8B9AB8472B8E6AF400F71617 /* Bot.swift in Sources */,
+				8B9AB8492B8E6AFB00F71617 /* Entity.swift in Sources */,
+				8B9AB8462B8E6AC000F71617 /* Vector2d.swift in Sources */,
+				8B9AB8432B8E6A5800F71617 /* OrganismModel.swift in Sources */,
+				8B9AB8482B8E6AF600F71617 /* Extensions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BAB11272B9614740094928D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BAB112E2B9614740094928D /* OrganismsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC8378592B53F459004D6ECE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EC8378632B53F459004D6ECE /* ContentView.swift in Sources */,
+				8B9AB8372B8E599900F71617 /* HUDView.swift in Sources */,
+				EC8378632B53F459004D6ECE /* SimulatorView.swift in Sources */,
 				ECD2CDE32B611659006D52EA /* Extensions.swift in Sources */,
 				EC8378872B567C78004D6ECE /* OrganismModel.swift in Sources */,
 				EC8378742B55EACF004D6ECE /* Entity.swift in Sources */,
-				EC8378702B55E761004D6ECE /* Timer.swift in Sources */,
+				8B9AB8352B8E598C00F71617 /* ChartContainer.swift in Sources */,
 				EC8378782B55EB43004D6ECE /* Organism.swift in Sources */,
 				EC8378612B53F459004D6ECE /* OrganismsApp.swift in Sources */,
 				EC8378762B55EAFA004D6ECE /* Simulation.swift in Sources */,
-				EC8378722B55EA66004D6ECE /* Math.swift in Sources */,
+				EC8378722B55EA66004D6ECE /* Vector2d.swift in Sources */,
 				ECD2CDE52B6117E2006D52EA /* Bot.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EC8378792B566B04004D6ECE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EC8378802B566B04004D6ECE /* OrganismsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		EC8378822B566B04004D6ECE /* PBXTargetDependency */ = {
+		8BAB11302B9614740094928D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EC83785C2B53F459004D6ECE /* Organisms */;
-			targetProxy = EC8378812B566B04004D6ECE /* PBXContainerItemProxy */;
+			targetProxy = 8BAB112F2B9614740094928D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		8B9AB8412B8E68DC00F71617 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8B9AB8422B8E68DC00F71617 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8BAB11322B9614740094928D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brettm..OrganismsTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Organisms.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Organisms";
+			};
+			name = Debug;
+		};
+		8BAB11332B9614740094928D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brettm..OrganismsTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Organisms.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Organisms";
+			};
+			name = Release;
+		};
 		EC83786A2B53F45A004D6ECE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -409,11 +558,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.brettm.Organisms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -446,56 +595,35 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.brettm.Organisms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-			};
-			name = Release;
-		};
-		EC8378832B566B04004D6ECE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brettm.OrganismsTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Organisms.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Organisms";
-			};
-			name = Debug;
-		};
-		EC8378842B566B04004D6ECE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.brettm.OrganismsTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Organisms.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Organisms";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8B9AB8402B8E68DC00F71617 /* Build configuration list for PBXNativeTarget "OrganismSim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B9AB8412B8E68DC00F71617 /* Debug */,
+				8B9AB8422B8E68DC00F71617 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8BAB11312B9614740094928D /* Build configuration list for PBXNativeTarget "OrganismsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BAB11322B9614740094928D /* Debug */,
+				8BAB11332B9614740094928D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		EC8378582B53F459004D6ECE /* Build configuration list for PBXProject "Organisms" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -514,15 +642,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EC8378852B566B04004D6ECE /* Build configuration list for PBXNativeTarget "OrganismsTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EC8378832B566B04004D6ECE /* Debug */,
-				EC8378842B566B04004D6ECE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -532,6 +651,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.1.0;
+			};
+		};
+		8BAB11242B92269A0094928D /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -546,6 +673,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8BA913BE2B77BAD000290B3B /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = DequeModule;
+		};
+		8BAB11252B92269A0094928D /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BAB11242B92269A0094928D /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

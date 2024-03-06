@@ -7,20 +7,27 @@
 
 import Foundation
 
-extension Array where Element == Organism {
-    func filterByRange(horizontal: ClosedRange<Double>, vertical: ClosedRange<Double>) -> [Organism] {
-        return self.filter{ $0.isInRange(horizontal: horizontal, vertical: vertical) }
+extension Array where Element == Vector2d {
+    func filterByDistance(_ radius: Float, relativeTo relativePosition: Vector2d = Vector2d()) -> [Element] {
+        return self.filter { $0.isInRange(radius: radius, relativeTo: relativePosition) }
     }
 }
 
-extension Organism {
-    func isInRange(horizontal: ClosedRange<Double>, vertical: ClosedRange<Double>) -> Bool {
-        if
-            self.position.0 > horizontal.lowerBound && self.position.0 < horizontal.upperBound,
-            self.position.1 > vertical.lowerBound && self.position.1 < vertical.upperBound {
-            return true
-        }
-        return false
+extension Array where Element: Entity {
+    func filterByDistance(_ radius: Float, relativeTo relativePosition: Vector2d = Vector2d()) -> [Element]  {
+        return self.filter { $0.position.isInRange(radius: radius, relativeTo: relativePosition) }
+    }
+}
+
+extension Vector2d {
+    func isInRange(radius: Float, relativeTo relativePosition: Vector2d = Vector2d()) -> Bool {
+        return self.distance(from: relativePosition) <= radius
+    }
+}
+
+extension Entity {
+    func isInRange(radius: Float, relativeTo position: Vector2d = Vector2d()) -> Bool {
+        return self.position.isInRange(radius: radius, relativeTo: position)
     }
 }
 

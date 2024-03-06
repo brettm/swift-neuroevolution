@@ -7,332 +7,262 @@
 
 import Foundation
 
-struct GenScore {
-    var gen: Int = 0
-    var bestScore: Float?
-    var avgScore: Float = 0.0
-    var botsScore: Float?
-    var breedableCount: Int = 0
+private actor ConcurrentStore<T> {
+    var values: [T] = []
+    var valueCount: Int { return values.count }
+    init(values: [T]) { self.values = values }
+    func valueAtIndex(_ index: Int) -> T { return values[index] }
+    func allValues() -> [T] { return values }
+    @discardableResult
+    func replaceValue(atIndex index: Int, withValue value: T) -> Self { values[index] = value; return self }
+    @discardableResult
+    func addValues(_ values: [T]) -> Self { self.values += values; return self }
+    @discardableResult
+    func removeAll() -> Self { values = []; return self }
+    @discardableResult
+    func removeAll(where: (T) throws -> Bool) rethrows -> Self { try values.removeAll(where: `where`); return self }
 }
 
-let positions = [
-    (-1.25, 1.0), (0.0, 1.0), (1.25, 1.0),
-    (-1.25, 0.0), (0.0, 0.0), (1.25, 0.0),
-    (-1.25, -1.0), (0.0, -1.0), (1.25, -1.0)
-]
-
-//@Observable
-struct Simulation {
-    
-//    @ObservationIgnored
-    var organisms: [Organism] = []
-//    @ObservationIgnored
-    var bots: [Bot] = []
-//    @ObservationIgnored
-    var foods: [Food] = []
-    
-    var horizontalPadding = 0.2
-    var verticalPadding = 0.2
-    var horizontalScale = (-2.0...2.0)
-    var verticalScale = (-2.0...2.0)
-    var horizontalSpawnScale: ClosedRange<Double> {
-        return ((horizontalScale.lowerBound + horizontalPadding)...(horizontalScale.upperBound - horizontalPadding))
-    }
-    var verticalSpawnScale: ClosedRange<Double> {
-        return ((verticalScale.lowerBound + verticalPadding)...(verticalScale.upperBound - verticalPadding))
-    }
-    
-    var maxOrganisms: Int
-    var maxBots: Int
-    var maxFood: Int
-    
-    var time: TimeInterval = 0
+public struct GenerationScore: Identifiable {
+    public var id: Int { return generation }
     var generation: Int = 0
-    var evolutionTime: TimeInterval = 60
-    var elitism: Int = 4
-    
-    var mutationChance: Float = 0.5
-    var mutationRate: Float = 0.25
+    var bestScore: Float = 0
+    var avgScore: Float = 0
+    var botsScore: Float = 0
+}
 
-    var friction: Double = 0.5
+public struct Simulation {
+    
+    public var onEvolve: ((Simulation) -> Void)?
+    
+    private let organismStore: ConcurrentStore<Organism>
+    private var botStore: ConcurrentStore<Bot>
+    private var foodStore: ConcurrentStore<Food> = ConcurrentStore(values: [])
+    public var organisms: [Organism] {
+        get async { return await organismStore.allValues() }
+    }
+    public var bots: [Bot] {
+        get async { return await botStore.allValues() }
+    }
+    public var foods: [Food] {
+        get async { return await foodStore.allValues() }
+    }
+    
+    public var scale: Float
+    
+    public var maxOrganisms: Int
+    public var maxBots: Int
+    public var maxFood: Int
+    
+    private(set) var time: Float = 0
+    private(set) var generation: Int = 0
+    public var evolutionTime: Float = 60
+    public var elitism: Int = 4
+    
+    public var mutationChance: Float = 0.5
+    public var mutationRate: Float = 0.25
+
+    public var friction: Float = 0.1
     
     // Best and avg. scores for each gen
-    var scores: [GenScore] = []
-    var currentBestOrganism: Organism?
+    private(set) var scores: [GenerationScore] = []
+    private(set) var currentBestOrganism: Organism?
     
-    init(maxOrganisms: Int = 50, maxBots: Int = 10, maxFood: Int = 50) {
+    init(maxOrganisms: Int = 50, maxBots: Int = 5, maxFood: Int = 50, scale: Float = 2.0) {
         self.maxOrganisms = maxOrganisms
         self.maxBots = maxBots
         self.maxFood = maxFood
-
-        self.organisms = (0..<maxOrganisms).map { idx in
-            let model = OrganismModel()
-            var org = Organism(
-                id: "thinking_organism_\(idx)",
-                model: model ,
-                position: (.random(in: horizontalSpawnScale), .random(in: verticalSpawnScale))
-            )
-            _ = org.model.createNetwork()
-            return org
-        }
+        self.scale = scale
         
-        self.bots = (0..<maxBots).map {idx in
-            Bot(
-                id: "organism_\(idx)",
-                position: (.random(in: horizontalSpawnScale), .random(in: verticalSpawnScale))
-            )
-        }
+        self.organismStore = ConcurrentStore(values: EntityFactory.makeOrganisms(count: maxOrganisms, scale: scale))
+        self.botStore = ConcurrentStore(values: EntityFactory.makeBots(count: maxBots, scale: scale))
     }
     
-    public mutating func tick(dt: Double = 1/30)  {
+    public mutating func tick(dt: Float = 1/30) async {
         
         time += dt
             
         if time >= evolutionTime {
             generation += 1
-            evolve()
-            resetSim()
+            await evolve()
+            await resetBots()
+            await resetSim()
         }
         
-        let bots = updateBots(bots, dt: dt)
+        if await foodStore.valueCount < maxFood { await addFoods(count: maxFood - foodStore.valueCount) }
+         
+        await self.updateBots(dt: dt)
+        await self.updateOrganisms(dt: dt)
         
-        if foods.count < maxFood {
-            addFoods(count: maxFood - foods.count)
-        }
-
-        var updatedOrganisms = updateOrganisms(organisms, dt: dt)
-        updatedOrganisms = updateOrgScore(updatedOrganisms)
-        
-        self.organisms = updatedOrganisms
-        self.bots = bots
+        currentBestOrganism = await self.organisms.sorted(by: { $0.energy > $1.energy }).first
     }
     
-    private mutating func addFoods(count: Int) {
-        self.foods += (0..<count).map{ _ in
-            Food(id: "\(UUID())", position: (.random(in: horizontalScale), .random(in: verticalScale)))
-        }
+    private mutating func addFoods(count: Int) async {
+        await foodStore.addValues(
+            EntityFactory.makeFoods(count: count, scale: self.scale)
+        )
     }
     
-    private mutating func resetSim() {
-        foods.removeAll()
-        time = 0.0
+    private mutating func resetSim() async {
+        await foodStore.removeAll()
+        self.time = 0.0
         self.currentBestOrganism = nil
-        self.resetBots()
     }
 }
 
 extension Simulation {
-    private func updateOrganisms(_ organisms: [Organism], dt: Double) -> [Organism] {
+    private func updateOrganism(_ organism: inout Organism, dt: Float) async {
         
-        var updatedOrganisms = organisms
-        
-        for (idx, organism) in organisms.enumerated() {
-            var organism = organism
-            
-            var visibleBots = bots.map {
-                ($0, distance(p1: organism.position, p2: $0.position))
-            }
+        var visibleBots = await bots.map { ($0, organism.position.distance(from: $0.position)) }
 //            .filter {
 //                distance(p1: $0.0.position , p2: organism.position) < 0.3
 //            }
-            .sorted{ $0.1 < $1.1 }
-            
-            if !visibleBots.isEmpty {
-                let bot = visibleBots.removeFirst()
-                organism.threatId = bot.0.id
-                organism.threatPosition = bot.0.position
-            }
-            
-//            if !visibleBots.isEmpty {
-//                let bot = visibleBots.removeFirst()
-//                organism.threat2Id = bot.0.id
-//                organism.threat2Position = bot.0.position
-//            }
-            
-            // Update Food targets
-            //
-            var visibleFoods = foods.map {
-                ($0, distance(p1: organism.position, p2: $0.position))
-            }
-//            .filter {
-//                distance(p1: $0.0.position , p2: organism.threatPosition) > 0.2
-//            }
-            .sorted{ $0.1 < $1.1 }
-            
-            if (organism.targetId == nil || visibleFoods.first(where: {$0.0.id == organism.targetId}) == nil),
-                !visibleFoods.isEmpty
-            {
-                let foodDistance = visibleFoods.removeFirst()
-                organism.targetId = foodDistance.0.id
-                organism.targetPosition = foodDistance.0.position
-            }
-            
-            if (organism.target2Id == nil || visibleFoods.first(where: {$0.0.id == organism.target2Id}) == nil),
-                !visibleFoods.isEmpty
-            {
-                let foodDistance = visibleFoods.removeFirst()
-                organism.target2Id = foodDistance.0.id
-                organism.target2Position = foodDistance.0.position
-            }
-            
-            organism.think(dt: dt)
-            
-            organism.position = (
-                organism.position.0 + organism.velocity.0,
-                organism.position.1 + organism.velocity.1
-            )
-            
-            organism.scaleVelocity(pow(friction, Double(dt)))
-            
-            updatedOrganisms[idx] = organism
+        .sorted{ $0.1 < $1.1 }
+        
+        if !visibleBots.isEmpty {
+            let bot = visibleBots.removeFirst()
+            organism.threatId = bot.0.id
+            organism.threatPosition = bot.0.position
         }
         
-        return updatedOrganisms
+        // Update Food targets
+        //
+        let foods = await foods
+//        let foodToAvoid: Set<Food> = Set(foods.filterByDistance(-0.3, relativeTo: organism.threatPosition))
+//        let safeFoods = Set(foods).subtracting(foodToAvoid)
+        let safeFoods = foods
+        var visibleFoods = safeFoods.map { ($0, organism.position.distance(from: $0.position)) }
+                                    .sorted{ $0.1 < $1.1 }
+    
+        if 
+//            (organism.targetId == nil || visibleFoods.first(where: {$0.0.id == organism.targetId}) == nil),
+            !visibleFoods.isEmpty {
+            let foodDistance = visibleFoods.removeFirst()
+            organism.targetId = foodDistance.0.id
+            organism.targetPosition = foodDistance.0.position
+        }
+        
+        if 
+//            (organism.target2Id == nil || visibleFoods.first(where: {$0.0.id == organism.target2Id}) == nil),
+            !visibleFoods.isEmpty {
+            let foodDistance = visibleFoods.removeFirst()
+            organism.target2Id = foodDistance.0.id
+            organism.target2Position = foodDistance.0.position
+        }
+
+        organism.think(dt: dt)
+        organism.position = organism.position + organism.velocity
+        organism.velocity *= pow(friction, dt)
     }
     
-    private mutating func updateOrgScore(_ organisms: [Organism]) -> [Organism] {
-        var updatedOrganisms = organisms
-        var bestScore = -Float.greatestFiniteMagnitude
-        for (idx, organism) in organisms.enumerated() {
-            var organism = organism
-            var targetDistance = distance(p1: organism.position, p2: organism.targetPosition)
-            if let id = organism.targetId, targetDistance < 0.07 {
-                organism.energy += 1
-                if organism.energy > 1 {
-                    foods.removeAll(where: { $0.id == id})
-                    organism.targetId = nil
+    private func updateOrganisms(dt: Float) async {
+        await withTaskGroup(of: Void.self) { taskGroup in
+            for index in 0..<maxOrganisms {
+                taskGroup.addTask{
+                    var organism = await organismStore.valueAtIndex(index)
+                    await updateOrganism(&organism, dt: dt)
+                    await updateFitness(&organism, dt: dt)
+                    await organismStore.replaceValue(atIndex: index, withValue: organism)
                 }
             }
-            
-            
-            targetDistance = distance(p1: organism.position, p2: organism.target2Position)
-            if let id = organism.target2Id, targetDistance < 0.07 {
-                organism.energy += 1
-                if organism.energy > 1 {
-                    foods.removeAll(where: { $0.id == id})
-                    organism.target2Id = nil
-                }
-            }
-            
-            var threatDistance = distance(p1: organism.position, p2: organism.threatPosition)
-            if
-                let id = organism.threatId,
-                organism.isInRange(horizontal: self.horizontalScale, vertical: verticalScale),
-                let bot = bots.first(where:{ $0.id == id }),
-                threatDistance < 0.07
-            {
-                organism.energy -= 3
-            }
-            organism.threatId = nil
-            
-//            threatDistance = distance(p1: organism.position, p2: organism.threat2Position)
-//            if
-//                let id = organism.threat2Id,
-//                organism.isInRange(horizontal: self.horizontalScale, vertical: verticalScale),
-//                let bot = bots.first(where:{ $0.id == id }),
-//                threatDistance < 0.07
-//            {
-//                organism.energy -= 3
-//            }
-//            organism.threat2Id = nil
-            
-            if !organism.isInRange(horizontal: horizontalScale, vertical: verticalScale) {
-                organism.energy -= Float(0.005 * distance(p1: organism.position, p2: (0, 0) ))
-            }
-            
-            if organism.energy > bestScore {
-                bestScore = organism.energy
-                self.currentBestOrganism = organism
-            }
-            
-            updatedOrganisms[idx] = organism
-//
-//            if organisms[idx].energy < 0 { organisms[idx].energy = 0 }
-//            organisms[idx].energy -= Float(0.001)
+        }
+    }
+    
+    private func updateFitness(_ organism: inout Organism, dt: Float) async {
+        var targetDistance = organism.position.distance(from: organism.targetPosition)
+        if let id = organism.targetId, targetDistance < 0.07 {
+            organism.energy += 1
+            await foodStore.removeAll(where: { $0.id == id } )
+            organism.targetId = nil
         }
         
-        return updatedOrganisms
+        targetDistance = organism.position.distance(from: organism.target2Position)
+        if let id = organism.target2Id, targetDistance < 0.07 {
+            organism.energy += 1
+            await foodStore.removeAll(where: { $0.id == id })
+            organism.target2Id = nil
+        }
+        
+        if organism.threatId != nil,
+           organism.position.distance(from: organism.threatPosition) < 0.07 {
+            organism.energy -= dt * 50
+        }
+        organism.threatId = nil
+        
+//        if !organism.isInRange(radius: scale * 1.5) {
+//            organism.energy -= Float(dt * organism.position.distance(from: Vector2d()))
+//        }
     }
 }
 
 extension Simulation {
     
-    private mutating func resetBots() {
-        for (idx, _) in bots.enumerated() {
-            bots[idx].position = (.random(in: horizontalSpawnScale), .random(in: verticalSpawnScale))
-            bots[idx].velocity = (0.0, 0.0)
-            bots[idx].energy = 1.0
+    private mutating func resetBots() async {
+        await botStore.removeAll().addValues(EntityFactory.makeBots(count: maxBots, scale: scale))
+    }
+    
+    private func updateBotTarget(_ bot: inout Bot, targets: [Organism]) {
+        bot.target = nil
+        bot.targetDistance = -1
+        var closest = Float.greatestFiniteMagnitude
+        for organism in targets {
+            let distance = bot.position.distance(from: organism.position)
+            if distance < closest {
+                bot.target = organism
+                bot.targetDistance = distance
+                closest = distance
+            }
         }
     }
     
-    private func updateBots(_ bots: [Bot], dt: TimeInterval) -> [Bot] {
+    private func updateBots(dt: Float) async {
         
-        let visible = organisms.filterByRange(horizontal: horizontalSpawnScale,
-                                              vertical: verticalSpawnScale)
-
-        var updatedBots = bots
-        for (bot_idx, bot) in bots.enumerated() {
-            var bot = bot
-            var leastFit = Double(Int.max)
-            for organism in visible {
-                guard organism.energy > 0 else { continue }
-                let fitness = distance(p1: organism.position, p2: bot.position)
-                if fitness < leastFit {
-                    bot.target = organism
-                    bot.targetDistance = fitness
-                    leastFit = fitness
-                }
-            }
-            
-            bot.think(dt: dt)
-            
-            bot.velocity = (
-                bot.velocity.0 * pow(friction, Double(dt)),
-                bot.velocity.1 * pow(friction, Double(dt))
-            )
-            
-            bot.position = (
-                bot.position.0 + bot.velocity.0,
-                bot.position.1 + bot.velocity.1
-            )
-            
-            if let target = bot.target {
-                if distance(p1: target.position, p2: bot.position) < 0.07 {
-                    if target is Organism {
-                        bot.energy += 1
+        await withTaskGroup(of: Void.self) { taskGroup in
+            for (idx, bot) in await bots.enumerated() {
+                Task {
+                    var bot = bot
+                    let visibleOrganisms: [Organism] = await organisms.filterByDistance(0.5, relativeTo: bot.position)
+                    updateBotTarget(&bot, targets: visibleOrganisms)
+                    bot.think(dt: dt)
+                    bot.velocity *= pow(friction, dt)
+                    bot.position = bot.position + bot.velocity
+                    
+                    if let target = bot.target {
+                        if bot.position.distance(from: target.position) < 0.07 {
+                            if target is Organism {
+                                bot.energy += dt
+                            }
+                        }
                     }
+                    
+                    await botStore.replaceValue(atIndex: idx, withValue: bot)
                 }
-                bot.target = nil
-                bot.targetDistance = -1
             }
-            
-            updatedBots[bot_idx] = bot
         }
-        return updatedBots
     }
 }
 
 // Crossover and mutate the weights of the best performing organisms
 extension Simulation {
-    mutating func evolve() {
+    private mutating func evolve() async {
         
         var newGen: [Organism] = []
-        var oldGen = organisms.sorted(by: { $0.energy > $1.energy })
+        var oldGen = await organisms.sorted(by: { $0.energy > $1.energy })
         let elitism = min(self.elitism, maxOrganisms)
-        
+//        
         scores.append(
-            GenScore(
-                gen: self.generation,
-                bestScore: oldGen.first?.energy,
+            GenerationScore(
+                generation: self.generation,
+                bestScore: oldGen.first?.energy ?? 0,
                 avgScore: oldGen.reduce(0, { $0 + $1.energy }) / Float(oldGen.count),
-                botsScore: bots.reduce(0.0, { $0 + $1.energy }) / Float(bots.count),
-                breedableCount: 0
+                botsScore: await bots.reduce(0.0, { $0 + $1.energy }) / Float(botStore.valueCount)
             )
         )
         
         for (idx, _) in oldGen.suffix(from: 0).enumerated() {
             oldGen[idx].model.destroyNetwork()
         }
+
         // generate offspring
         for idx in (0..<maxOrganisms - newGen.count) {
             var offspring: Organism
@@ -399,33 +329,22 @@ extension Simulation {
                         hiddenToOutputWeights: xHiddenToOutputWeights,
                         hiddenToOutputBias: xHiddenToOutputBias
                     ),
-                    position: (.random(in: horizontalSpawnScale), .random(in: verticalSpawnScale))
+                    position: Vector2d.random(scale: scale)
                 )
             }
             else {
                 offspring = Organism(
                     id: "thinking_organism_\(idx)_gen_\(generation)",
                     model: OrganismModel(),
-                    position: (.random(in: horizontalSpawnScale), .random(in: verticalSpawnScale))
+                    position: Vector2d.random(scale: scale)
                 )
             }
             offspring.model.createNetwork()
             newGen.append(offspring)
         }
-
-        // reset any organisms from older generations
-        for (idx, _) in newGen.enumerated() {
-            newGen[idx].energy = 1
-            newGen[idx].targetId = nil
-            newGen[idx].targetPosition = (0, 0)
-            newGen[idx].target2Id = nil
-            newGen[idx].target2Position = (0, 0)
-            newGen[idx].threatId = nil
-            newGen[idx].threatPosition = (0, 0)
-            newGen[idx].scaleVelocity(0.0)
-        }
         
-        self.organisms = newGen
+        await self.organismStore.removeAll().addValues(newGen)
+        onEvolve?(self)
     }
     
     private func mutateRandom(weights: inout [Float], rate: Float) {

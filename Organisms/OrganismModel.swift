@@ -8,20 +8,20 @@
 import Foundation
 import Accelerate
 
-private struct MLPNode {
+public struct MLPNodeShape {
     static let inputNodesCount = 9
-    static let hiddenNodesCount = 81
+    static let hiddenNodesCount = 18
     static let outputNodesCount = 2
 }
 
 private struct MLPWeight {
-    static let inputToHiddenWeightsCount = MLPNode.inputNodesCount * MLPNode.hiddenNodesCount
+    static let inputToHiddenWeightsCount = MLPNodeShape.inputNodesCount * MLPNodeShape.hiddenNodesCount
     static let inputToHiddenBiasCount = MLPWeight.inputToHiddenWeightsCount
-    static let hiddenToOutputWeightsCount = MLPNode.hiddenNodesCount * MLPNode.outputNodesCount
+    static let hiddenToOutputWeightsCount = MLPNodeShape.hiddenNodesCount * MLPNodeShape.outputNodesCount
     static let hiddenToOutputBiasCount = MLPWeight.hiddenToOutputWeightsCount
 }
 
-struct OrganismModel {
+public struct OrganismModel: Equatable {
     
     private var hiddenLayer: BNNSFilter?
     private var outputLayer: BNNSFilter?
@@ -47,8 +47,8 @@ struct OrganismModel {
         precondition(outputLayer != nil)
         
         // These arrays hold the inputs and outputs to and from the layers.
-        var hidden: [Float] = ( 0..<MLPNode.hiddenNodesCount ).map { _ in 0 }
-        var output: [Float] = ( 0..<MLPNode.outputNodesCount ).map { _ in 0 }
+        var hidden: [Float] = ( 0..<MLPNodeShape.hiddenNodesCount ).map { _ in 0 }
+        var output: [Float] = ( 0..<MLPNodeShape.outputNodesCount ).map { _ in 0 }
         
         var status = BNNSFilterApply(hiddenLayer, input, &hidden)
         if status != 0 {
@@ -98,18 +98,18 @@ struct OrganismModel {
                             data_scale: 0, data_bias: 0, data_table: nil)
                         
                         var inputToHiddenParams = BNNSFullyConnectedLayerParameters(
-                            in_size: MLPNode.inputNodesCount, out_size: MLPNode.hiddenNodesCount, weights: inputToHiddenWeightsData,
+                            in_size: MLPNodeShape.inputNodesCount, out_size: MLPNodeShape.hiddenNodesCount, weights: inputToHiddenWeightsData,
                             bias: inputToHiddenBiasData, activation: hiddenActivation)
                         
                         var hiddenToOutputParams = BNNSFullyConnectedLayerParameters(
-                            in_size: MLPNode.hiddenNodesCount, out_size: MLPNode.outputNodesCount, weights: hiddenToOutputWeightsData,
+                            in_size: MLPNodeShape.hiddenNodesCount, out_size: MLPNodeShape.outputNodesCount, weights: hiddenToOutputWeightsData,
                             bias: hiddenToOutputBiasData, activation: outActivation)
                         
                         var inputDesc = BNNSVectorDescriptor(
-                            size: MLPNode.inputNodesCount, data_type: BNNSDataType.float, data_scale: 0, data_bias: 0)
+                            size: MLPNodeShape.inputNodesCount, data_type: BNNSDataType.float, data_scale: 0, data_bias: 0)
                         
                         var hiddenDesc = BNNSVectorDescriptor(
-                            size: MLPNode.hiddenNodesCount, data_type: BNNSDataType.float, data_scale: 0, data_bias: 0)
+                            size: MLPNodeShape.hiddenNodesCount, data_type: BNNSDataType.float, data_scale: 0, data_bias: 0)
                         
                         hiddenLayer = BNNSFilterCreateFullyConnectedLayer(&inputDesc, &hiddenDesc, &inputToHiddenParams, nil)
                         if hiddenLayer == nil {
@@ -118,7 +118,7 @@ struct OrganismModel {
                         }
                         
                         var outputDesc = BNNSVectorDescriptor(
-                            size: MLPNode.outputNodesCount, data_type: BNNSDataType.float, data_scale: 0, data_bias: 0)
+                            size: MLPNodeShape.outputNodesCount, data_type: BNNSDataType.float, data_scale: 0, data_bias: 0)
                         
                         outputLayer = BNNSFilterCreateFullyConnectedLayer(&hiddenDesc, &outputDesc, &hiddenToOutputParams, nil)
                         if outputLayer == nil {

@@ -11,7 +11,7 @@ import SwiftUI
 struct OrganismsApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            OrganismSimulator()
         }
     }
 }
