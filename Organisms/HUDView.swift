@@ -21,7 +21,7 @@ private struct Scores: View {
     #else
     private let isCompact = false
     #endif
-    @State private var sortOrder = [KeyPathComparator(\GenerationScore.generation, order: .reverse)]
+    @State private var sortOrder = [KeyPathComparator<GenerationScore>(\.generation, order: .reverse)]
     let scores: [GenerationScore]
     var body: some View {
         Table(scores, sortOrder: $sortOrder) {
@@ -38,7 +38,6 @@ private struct Scores: View {
 
 struct HUD: View {
     @Environment(SimulatorViewModel.self) var viewModel: SimulatorViewModel
-    
     var body: some View {
         VStack {
             Text("Current generation: \(viewModel.sim.generation)")
@@ -48,24 +47,23 @@ struct HUD: View {
                 HStack(alignment: .bottom) {
                     VStack {
                         Spacer()
-                        Scores(scores: viewModel.sim.scores)
+                        Scores(scores: viewModel.sim.scores.reversed())
                             .scrollContentBackground(.hidden)
                             .frame(maxHeight: 120.0)
                     }
-                        .frame(minWidth: 200, maxWidth: .infinity)
-                        .foregroundStyle(.green)
+                    .frame(minWidth: 200, maxWidth: .infinity)
+                    .foregroundStyle(.green)
                     Spacer()
                     HStack {
                         Spacer()
                         VStack {
-                            
-                            Image(systemName: "triangle")
+                            Image(systemName: "triangle.fill")
                             Text("\(best.id)").lineLimit(1).truncationMode(.head)
                             Text(String(format: "%.2f", best.energy)).lineLimit(1)
                         }
                     }
-                        .frame(minWidth: 0, maxWidth: .infinity)
-                        .foregroundStyle(.green)
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .foregroundStyle(.green)
                 }
                 .padding()
             }

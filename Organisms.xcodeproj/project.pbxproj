@@ -13,7 +13,6 @@
 		8B9AB8432B8E6A5800F71617 /* OrganismModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378862B567C78004D6ECE /* OrganismModel.swift */; };
 		8B9AB8442B8E6A7700F71617 /* Simulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378752B55EAFA004D6ECE /* Simulation.swift */; };
 		8B9AB8452B8E6AB900F71617 /* Organism.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378772B55EB43004D6ECE /* Organism.swift */; };
-		8B9AB8462B8E6AC000F71617 /* Vector2d.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378712B55EA66004D6ECE /* Vector2d.swift */; };
 		8B9AB8472B8E6AF400F71617 /* Bot.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD2CDE42B6117E2006D52EA /* Bot.swift */; };
 		8B9AB8482B8E6AF600F71617 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD2CDE22B611659006D52EA /* Extensions.swift */; };
 		8B9AB8492B8E6AFB00F71617 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378732B55EACF004D6ECE /* Entity.swift */; };
@@ -25,7 +24,6 @@
 		EC8378632B53F459004D6ECE /* SimulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378622B53F459004D6ECE /* SimulatorView.swift */; };
 		EC8378652B53F45A004D6ECE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC8378642B53F45A004D6ECE /* Assets.xcassets */; };
 		EC8378692B53F45A004D6ECE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC8378682B53F45A004D6ECE /* Preview Assets.xcassets */; };
-		EC8378722B55EA66004D6ECE /* Vector2d.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378712B55EA66004D6ECE /* Vector2d.swift */; };
 		EC8378742B55EACF004D6ECE /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378732B55EACF004D6ECE /* Entity.swift */; };
 		EC8378762B55EAFA004D6ECE /* Simulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378752B55EAFA004D6ECE /* Simulation.swift */; };
 		EC8378782B55EB43004D6ECE /* Organism.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8378772B55EB43004D6ECE /* Organism.swift */; };
@@ -69,7 +67,6 @@
 		EC8378642B53F45A004D6ECE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EC8378662B53F45A004D6ECE /* Organisms.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Organisms.entitlements; sourceTree = "<group>"; };
 		EC8378682B53F45A004D6ECE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		EC8378712B55EA66004D6ECE /* Vector2d.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector2d.swift; sourceTree = "<group>"; };
 		EC8378732B55EACF004D6ECE /* Entity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
 		EC8378752B55EAFA004D6ECE /* Simulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulation.swift; sourceTree = "<group>"; };
 		EC8378772B55EB43004D6ECE /* Organism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Organism.swift; sourceTree = "<group>"; };
@@ -152,7 +149,6 @@
 				EC8378642B53F45A004D6ECE /* Assets.xcassets */,
 				EC8378662B53F45A004D6ECE /* Organisms.entitlements */,
 				EC8378672B53F45A004D6ECE /* Preview Content */,
-				EC8378712B55EA66004D6ECE /* Vector2d.swift */,
 				EC8378752B55EAFA004D6ECE /* Simulation.swift */,
 				EC8378862B567C78004D6ECE /* OrganismModel.swift */,
 				EC8378732B55EACF004D6ECE /* Entity.swift */,
@@ -306,7 +302,6 @@
 				8B9AB8442B8E6A7700F71617 /* Simulation.swift in Sources */,
 				8B9AB8472B8E6AF400F71617 /* Bot.swift in Sources */,
 				8B9AB8492B8E6AFB00F71617 /* Entity.swift in Sources */,
-				8B9AB8462B8E6AC000F71617 /* Vector2d.swift in Sources */,
 				8B9AB8432B8E6A5800F71617 /* OrganismModel.swift in Sources */,
 				8B9AB8482B8E6AF600F71617 /* Extensions.swift in Sources */,
 			);
@@ -333,7 +328,6 @@
 				EC8378782B55EB43004D6ECE /* Organism.swift in Sources */,
 				EC8378612B53F459004D6ECE /* OrganismsApp.swift in Sources */,
 				EC8378762B55EAFA004D6ECE /* Simulation.swift in Sources */,
-				EC8378722B55EA66004D6ECE /* Vector2d.swift in Sources */,
 				ECD2CDE52B6117E2006D52EA /* Bot.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

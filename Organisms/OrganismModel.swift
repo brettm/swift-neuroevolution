@@ -9,9 +9,9 @@ import Foundation
 import Accelerate
 
 public struct MLPNodeShape {
-    static let inputNodesCount = 9
-    static let hiddenNodesCount = 18
-    static let outputNodesCount = 2
+    static let inputNodesCount = 8
+    static let hiddenNodesCount = 8
+    static let outputNodesCount = 4
 }
 
 private struct MLPWeight {
@@ -21,25 +21,35 @@ private struct MLPWeight {
     static let hiddenToOutputBiasCount = MLPWeight.hiddenToOutputWeightsCount
 }
 
+public struct ModelWeights: Equatable {
+    var inputToHiddenWeights: [Float] = []
+    var inputToHiddenBias: [Float] = []
+    var hiddenToOutputWeights: [Float] = []
+    var hiddenToOutputBias: [Float] = []
+}
+
 public struct OrganismModel: Equatable {
     
     private var hiddenLayer: BNNSFilter?
     private var outputLayer: BNNSFilter?
     
-    var inputToHiddenWeights: [Float] = []
-    var inputToHiddenBias: [Float] = []
-    var hiddenToOutputWeights: [Float] = []
-    var hiddenToOutputBias: [Float] = []
+    internal var weights: ModelWeights
+    
+    init(weights: ModelWeights) {
+        self.weights = weights
+    }
     
     internal init(
         inputToHiddenWeights: [Float] = ( 0..<MLPWeight.inputToHiddenWeightsCount ).map { _ in .random(in: -1.0...1.0) },
         inputToHiddenBias: [Float] = ( 0..<MLPWeight.inputToHiddenBiasCount ).map { _ in .random(in: -1.0...1.0) },
         hiddenToOutputWeights: [Float] = ( 0..<MLPWeight.hiddenToOutputWeightsCount ).map { _ in .random(in: -1.0...1.0) },
         hiddenToOutputBias: [Float] = ( 0..<MLPWeight.hiddenToOutputBiasCount ).map { _ in .random(in: -0.1...0.1) }) {
-            self.inputToHiddenWeights = inputToHiddenWeights
-            self.inputToHiddenBias = inputToHiddenBias
-            self.hiddenToOutputWeights = hiddenToOutputWeights
-            self.hiddenToOutputBias = hiddenToOutputBias
+            self.weights = ModelWeights(
+                inputToHiddenWeights: inputToHiddenWeights,
+                inputToHiddenBias: inputToHiddenBias,
+                hiddenToOutputWeights: hiddenToOutputWeights,
+                hiddenToOutputBias: hiddenToOutputBias
+            )
         }
         
     func predict(_ input: [Float]) -> [Float] {
@@ -54,7 +64,6 @@ public struct OrganismModel: Equatable {
         if status != 0 {
             print("BNNSFilterApply failed on hidden layer")
         }
-        
         status = BNNSFilterApply(outputLayer, hidden, &output)
         if status != 0 {
             print("BNNSFilterApply failed on output layer")
@@ -76,10 +85,10 @@ public struct OrganismModel: Equatable {
         let hiddenActivation = BNNSActivation(function: BNNSActivationFunction.identity, alpha: 0, beta: 0)
         let outActivation = BNNSActivation(function: BNNSActivationFunction.tanh, alpha: 0, beta: 0)
         
-        _ = inputToHiddenWeights.withUnsafeBufferPointer { inputToHiddenWeightsBP in
-            inputToHiddenBias.withUnsafeBufferPointer { inputToHiddenBiasDataBP in
-                hiddenToOutputWeights.withUnsafeBufferPointer { hiddenToOutputWeightsBP in
-                    hiddenToOutputBias.withUnsafeBufferPointer { hiddenToOutputBiasBP in
+        _ = weights.inputToHiddenWeights.withUnsafeBufferPointer { inputToHiddenWeightsBP in
+            weights.inputToHiddenBias.withUnsafeBufferPointer { inputToHiddenBiasDataBP in
+                weights.hiddenToOutputWeights.withUnsafeBufferPointer { hiddenToOutputWeightsBP in
+                    weights.hiddenToOutputBias.withUnsafeBufferPointer { hiddenToOutputBiasBP in
                         
                         let inputToHiddenWeightsData = BNNSLayerData(
                             data: inputToHiddenWeightsBP.baseAddress!, data_type: BNNSDataType.float,

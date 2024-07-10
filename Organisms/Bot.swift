@@ -8,6 +8,10 @@
 import Foundation
 
 public struct Bot: Entity, Identifiable {
+    
+    public func isInVisibleRange<T>(of entity: T) -> Bool where T : Entity {
+        return false
+    }
         
     public var id: String = "organism"
     public var energy: Float = 1.0
@@ -15,13 +19,13 @@ public struct Bot: Entity, Identifiable {
     var target: (any Entity)?
     var targetDistance: Float = 0.0
     
-    public var position: Vector2d = Vector2d()
-    public var velocity: Vector2d = Vector2d()
+    public var position = SIMD3<Float>()
+    public var velocity = SIMD3<Float>()
 
-    var maxSpeed: Float = 2 + .random(in: 0...0.1)
-    var maxAcceleration: Float = 0.25 + .random(in: 0...0.05)
+    var maxSpeed: Float = 1 + .random(in: 0...0.5)
+    var maxAcceleration: Float = 0.25 + .random(in: 0...0.5)
     
-    init(id: String, position: Vector2d = Vector2d()) {
+    init(id: String, position: SIMD3<Float> = .init()) {
         self.id = id
         self.position = position
     }
@@ -44,9 +48,10 @@ public struct Bot: Entity, Identifiable {
             //  Compute the acceleration components along x and y directions, considering the distance (diff) and the organism's maximum acceleration. The division by diff ensures that the acceleration scales with the distance between the current and desired velocities, allowing for smoother adjustments.
             let acceleration =  delta / diff * self.maxAcceleration
             //  Updating the organism's velocity using a kinematic equation is necessary to modify its position in the simulation over time.
-            self.velocity = Vector2d(
+            self.velocity = SIMD3(
                 x: (self.velocity.x + acceleration.x * dt * dt * 0.5).clamped(to: -maxSpeed...maxSpeed),
-                y: (self.velocity.y + acceleration.y * dt * dt * 0.5).clamped(to: -maxSpeed...maxSpeed)
+                y: (self.velocity.y + acceleration.y * dt * dt * 0.5).clamped(to: -maxSpeed...maxSpeed),
+                z: (self.velocity.z + acceleration.z * dt * dt * 0.5).clamped(to: -maxSpeed...maxSpeed)
             )
         }
     }
