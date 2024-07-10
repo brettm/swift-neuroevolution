@@ -14,7 +14,7 @@ var bestOrg: Organism?
 var bestWeights: ModelWeights?
 sim.onEvolve = { sim in
     print(sim.scores.last!)
-    if sim.generation >= 100 { active = false }
+    if sim.generation >= 200 { active = false }
     if sim.scores.last!.bestScore * sim.scores.last!.avgScore > bestScore {
         bestScore = sim.scores.last!.bestScore * sim.scores.last!.avgScore
         bestWeights = bestOrg?.model.weights

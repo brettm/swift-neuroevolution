@@ -10,7 +10,7 @@ import Accelerate
 
 public struct MLPNodeShape {
     static let inputNodesCount = 8
-    static let hiddenNodesCount = 8
+    static let hiddenNodesCount = 24
     static let outputNodesCount = 4
 }
 
@@ -55,7 +55,6 @@ public struct OrganismModel: Equatable {
     func predict(_ input: [Float]) -> [Float] {
         precondition(hiddenLayer != nil)
         precondition(outputLayer != nil)
-        
         // These arrays hold the inputs and outputs to and from the layers.
         var hidden: [Float] = ( 0..<MLPNodeShape.hiddenNodesCount ).map { _ in 0 }
         var output: [Float] = ( 0..<MLPNodeShape.outputNodesCount ).map { _ in 0 }

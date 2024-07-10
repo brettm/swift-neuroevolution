@@ -64,7 +64,7 @@ public struct Simulation {
 
     public var food: Float = 2.0
     public var friction: Float = 0.4
-    public var botDamage: Float = 0.925
+    public var botDamage: Float = 0.975
     public var collisionDistance: Float = 0.08
     
     // Best and avg. scores for each gen
@@ -133,7 +133,6 @@ extension Simulation {
         let foods = await foods
 
         var visibleFoods = foods
-//            .filter{ $0.inVisibleRange(of: organism) }
             .map { ($0, organism.position.distance(from: $0.position)) }
             .filter{ $0.1 < 1 }
             .sorted{ $0.1 < $1.1 }
@@ -143,13 +142,6 @@ extension Simulation {
             organism.targetId = foodDistance.0.id
             organism.targetPosition = foodDistance.0.position
         }
-//        if 
-////            (organism.target2Id == nil || visibleFoods.first(where: {$0.0.id == organism.target2Id}) == nil),
-//            !visibleFoods.isEmpty {
-//            let foodDistance = visibleFoods.removeFirst()
-//            organism.target2Id = foodDistance.0.id
-//            organism.target2Position = foodDistance.0.position
-//        }
 
         organism.think(dt: dt)
         organism.velocity *= pow(friction, dt)
