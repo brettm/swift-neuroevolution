@@ -42,9 +42,9 @@ public struct Organism: Entity {
     mutating func think(dt: Float) {
         
         var input: [Float] = [
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-//            0.0, 0.0, 0.0, 0.0
+            0.0, 0.0, 0.0, -1.0,
+            0.0, 0.0, 0.0, -1.0,
+//            0.0, 0.0, 0.0, -1.0
         ]
         
         if targetId != nil {
@@ -60,12 +60,12 @@ public struct Organism: Entity {
             (input[4], input[5], input[6]) = (threatDirection.x, threatDirection.y, threatDirection.z)
             input[7] = distance / 10.0
         }
-
+        
 //        if target2Id != nil {
 //            let targetDirection = self.position.vector(from: target2Position).normalise()
 //            let distance = self.position.distance(from: target2Position)
 //            (input[8], input[9], input[10]) = (targetDirection.x, targetDirection.y, targetDirection.z)
-//            input[11] = distance / 20.0
+//            input[11] = distance / 10.0
 //        }
         
         let direction = model.predict( Array(input[0...7]) )
@@ -75,7 +75,6 @@ public struct Organism: Entity {
             y: (self.velocity.y + ay * dt * dt * 0.5 * speed).clamped(to: -maxSpeed...maxSpeed),
             z: (self.velocity.z + az * dt * dt * 0.5 * speed).clamped(to: -maxSpeed...maxSpeed)
         )
-//        print(input, self.velocity)
     }
 }
 

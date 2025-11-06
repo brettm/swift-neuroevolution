@@ -50,9 +50,8 @@ public struct Food: Entity {
 enum EntityFactory {
     static func makeOrganisms(count: Int, scale: Float = 1, weights: ModelWeights? = nil) -> [Organism] {
         return (0..<count).map { idx in
-            let model = weights == nil ? OrganismModel() : OrganismModel(weights: weights!)
+            let model = weights == nil ? OrganismModel() : OrganismModel(initialWeights: weights)
             var org = Organism(id: "thinking_organism_\(idx)", model: model, position: SIMD3.random(scale: scale))
-            _ = org.model.createNetwork()
             return org
         }
     }

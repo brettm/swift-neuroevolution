@@ -22,7 +22,7 @@ public struct Bot: Entity, Identifiable {
     public var position = SIMD3<Float>()
     public var velocity = SIMD3<Float>()
 
-    var maxSpeed: Float = 1 + .random(in: 0...0.5)
+    var maxSpeed: Float = 0.5 + .random(in: 0...0.5)
     var maxAcceleration: Float = 0.25 + .random(in: 0...0.5)
     
     init(id: String, position: SIMD3<Float> = .init()) {

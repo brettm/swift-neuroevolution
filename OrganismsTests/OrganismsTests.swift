@@ -38,7 +38,7 @@ final class OrganismsTests: XCTestCase {
         var model = OrganismModel()
         XCTAssert(model.createNetwork() != false)
         let pred = model.predict([0.5, 0.5, 0.1, -0.5, -0.5, 1.0, -1.0, 0.0, 1.0])
-        XCTAssert(pred.count == MLPNodeShape.outputNodesCount)
+        XCTAssert(pred.count == MLPNodeStructure.outputNodesCount)
     }
     
     func testVector2d() {

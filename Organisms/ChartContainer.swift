@@ -42,7 +42,7 @@ struct ChartContainer: View {
                             VStack {
                                 Image(systemName: "poweroutlet.type.h.fill")
                                     .rotationEffect( Angle(radians: Double(bot.rotation)) )
-                                    .scaleEffect(CGSizeMake(Double((bot.position.z + 2.5) * 0.25),Double((bot.position.z + 2.5) * 0.25)))
+                                    .scaleEffect(CGSizeMake(Double((bot.position.z + 2.5) * 0.4),Double((bot.position.z + 2.5) * 0.4)))
                             }
                             .foregroundStyle(.red)
                         }
