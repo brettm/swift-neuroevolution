@@ -6,26 +6,26 @@
 //
 
 import Foundation
+import simd
 
 extension SIMD3 where Scalar == Float {
+    
     static func random(scale: Float) -> SIMD3 {
         return Self(x: .random(in: -scale...scale), y: .random(in: -scale...scale), z: .random(in: -scale...scale))
     }
-    func distance(from vector: SIMD3) -> Float {
-        let directionVector = vector - self
-        return directionVector.magnitude()
-    }
-    func vector(from p2: SIMD3) -> SIMD3 {
-        let p1 = self
-        return SIMD3(x: p2.x - p1.x, y: p2.y - p1.y, z: p2.z - p1.z)
-    }
-    func magnitude() -> Float {
-        return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2))
-    }
-    func normalise() -> SIMD3 {
-        let m = magnitude()
-        return SIMD3(x: x/m, y: y/m, z: z/m)
-    }
+    
+//    func distance(from vector: SIMD3) -> Float {
+//        let directionVector = vector - self
+//        return directionVector.magnitude()
+//    }
+//    
+//    func magnitude() -> Float {
+//        return sqrt(reduce_add(self * self))
+//    }
+//    
+//    func normalise() -> SIMD3 {
+//        return normalize(self)
+//    }
 }
 
 extension Array where Element == SIMD3<Float> {
@@ -42,7 +42,7 @@ extension Array where Element: Entity {
 
 extension SIMD3<Float> {
     func isInRange(radius: Float, relativeTo relativePosition: SIMD3<Float> = .init()) -> Bool {
-        return self.distance(from: relativePosition) <= radius
+        return length(relativePosition - self) <= radius
     }
 }
 

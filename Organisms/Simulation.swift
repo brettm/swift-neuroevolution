@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import simd
 
 private actor ConcurrentStore<T> {
     var values: [T] = []
@@ -57,17 +58,17 @@ public struct Simulation {
     private(set) var time: Float = 0
     private(set) var generation: Int = 0
     public var evolutionTime: Float = 60
-    public var elitism: Int = 4
+    public var elitism: Int = 3
     
-    public var mutationChance: Float = 0.5
-    public var mutationRate: Float = 0.25
+    public var mutationChance: Float = 0.6
+    public var mutationRate: Float = 0.4
 
-    public var food: Float = 1.0
-    public var friction: Float = 0.5
-    public var botDamage: Float = 0.95
-    public var visibility: Float = 3
+    public var food: Float = 4.0
+    public var friction: Float = 0.7
+    public var botDamage: Float = 0.9
+    public var visibility: Float = 4.0
     
-    public var foodCollisionDistance: Float = 0.05
+    public var foodCollisionDistance: Float = 0.15
     public var botCollisionDistance: Float = 0.1
     
     // Best and avg. scores for each gen
@@ -77,7 +78,7 @@ public struct Simulation {
     private(set) var modelWeights: ModelWeights?
     private(set) var modelStructure: MLPNodeStructure?
     
-    init(maxOrganisms: Int = 40, maxBots: Int = 3, maxFood: Int = 70, scale: Float = 2.0, modelWeights: ModelWeights? = nil, modelStructure: MLPNodeStructure? = nil) {
+    init(maxOrganisms: Int = 50, maxBots: Int = 3, maxFood: Int = 100, scale: Float = 2.0, modelWeights: ModelWeights? = nil, modelStructure: MLPNodeStructure? = nil) {
         self.maxOrganisms = maxOrganisms
         self.maxBots = maxBots
         self.maxFood = maxFood
@@ -111,7 +112,7 @@ public struct Simulation {
     
     private mutating func addFoods(count: Int) async {
         await foodStore.addValues(
-            EntityFactory.makeFoods(count: 1, scale: self.scale)
+            EntityFactory.makeFoods(count: count, scale: self.scale)
         )
     }
     
@@ -126,7 +127,7 @@ extension Simulation {
     private func updateOrganism(_ organism: inout Organism, dt: Float) async {
         
         var visibleBots = await bots
-            .map { ($0, organism.position.distance(from: $0.position)) }
+            .map { ($0, length($0.position - organism.position)) }
             .filter{ $0.1 < visibility }
             .sorted{ $0.1 > $1.1 }
         
@@ -135,26 +136,31 @@ extension Simulation {
             organism.threatId = bot.0.id
             organism.threatPosition = bot.0.position
         }
+        
         // Update Food targets
         //
         let foods = await foods
-
         var visibleFoods = foods
-            .map { ($0, organism.position.distance(from: $0.position)) }
+            .map { ($0, length($0.position - organism.position)) }
             .filter{ $0.1 < visibility }
             .sorted{ $0.1 > $1.1 }
     
+//        // Debug logging
+//            if Int.random(in: 0...200) == 0 && !visibleFoods.isEmpty {
+//                let closest = visibleFoods.last!
+//                let farthest = visibleFoods.first!
+//                print("Org \(organism.id): \(visibleFoods.count) foods visible, closest=\(closest.1), farthest=\(farthest.1), targeting=\(closest.1)")
+//            }
         
         if !visibleFoods.isEmpty {
             let foodDistance = visibleFoods.removeLast()
             organism.targetId = foodDistance.0.id
             organism.targetPosition = foodDistance.0.position
+        } 
+        else {
+            organism.targetId = nil
         }
-//        if !visibleFoods.isEmpty {
-//            let foodDistance = visibleFoods.removeLast()
-//            organism.target2Id = foodDistance.0.id
-//            organism.target2Position = foodDistance.0.position
-//        }
+
         organism.think(dt: dt)
         organism.velocity *= pow(friction, dt)
         organism.position = organism.position + organism.velocity
@@ -174,22 +180,22 @@ extension Simulation {
     }
     
     private func updateFitness(_ organism: inout Organism, dt: Float) async {
-        var targetDistance = organism.position.distance(from: organism.targetPosition)
+        // Base energy drain
+        organism.energy -= 0.001 * dt
+        // Energy drain over time
+        let normalisedDistance = length(organism.position) / scale
+        let centrePenalty = (normalisedDistance * normalisedDistance) * 0.005 * dt
+        organism.energy -= centrePenalty
+        
+        let targetDistance = length(organism.targetPosition - organism.position)
         if let id = organism.targetId, targetDistance < foodCollisionDistance {
             organism.energy += food
             await foodStore.removeAll(where: { $0.id == id } )
             organism.targetId = nil
         }
         
-//        targetDistance = organism.position.distance(from: organism.target2Position)
-//        if let id = organism.target2Id, targetDistance < foodCollisionDistance {
-//            organism.energy += food
-//            await foodStore.removeAll(where: { $0.id == id })
-//            organism.target2Id = nil
-//        }
-        
         if organism.threatId != nil,
-           organism.position.distance(from: organism.threatPosition) < botCollisionDistance {
+            length(organism.threatPosition - organism.position) < botCollisionDistance {
             organism.energy *= pow(botDamage, dt)
             organism.threatId = nil
         }
@@ -207,7 +213,7 @@ extension Simulation {
         bot.targetDistance = -1
         var closest = Float.greatestFiniteMagnitude
         for organism in targets {
-            let distance = bot.position.distance(from: organism.position)
+            let distance = length(organism.position - bot.position)
             if distance < closest {
                 bot.target = organism
                 bot.targetDistance = distance
@@ -229,7 +235,7 @@ extension Simulation {
                     bot.position = bot.position + bot.velocity
                     
                     if let target = bot.target {
-                        if bot.position.distance(from: target.position) < botCollisionDistance {
+                        if length(target.position - bot.position) < botCollisionDistance {
                             if target is Organism {
                                 bot.energy += dt
                             }
@@ -244,11 +250,32 @@ extension Simulation {
 
 // Crossover and mutate the weights of the best performing organisms
 extension Simulation {
+    private func crossover(parent1: Organism, parent2: Organism) -> ModelWeights {
+        let weight = Float.random(in: 0.4...0.6)
+        return ModelWeights(
+            inputToHiddenWeights: zip(parent1.model.weights.inputToHiddenWeights, parent2.model.weights.inputToHiddenWeights).map {
+                $0.0 * weight + (1 - weight) * $0.1
+            },
+            inputToHiddenBias: zip(parent1.model.weights.inputToHiddenBias, parent2.model.weights.inputToHiddenBias).map {
+                $0.0 * weight + (1 - weight) * $0.1
+            },
+            hiddenToOutputWeights: zip(parent1.model.weights.hiddenToOutputWeights, parent2.model.weights.hiddenToOutputWeights).map {
+                $0.0 * weight + (1 - weight) * $0.1
+            },
+            hiddenToOutputBias: zip(parent1.model.weights.hiddenToOutputBias, parent2.model.weights.hiddenToOutputBias).map {
+                $0.0 * weight + (1 - weight) * $0.1
+            })
+    }
+    
+    func selectParent(parentPool: [Organism]) -> Organism {
+        // Tournament selection works with negative values
+        let tournamentSize = min(5, parentPool.count)
+        let tournament = (0..<tournamentSize).map { _ in parentPool.randomElement()! }
+        return tournament.max(by: { $0.energy < $1.energy })!
+    }
+    
     private mutating func evolve() async {
-        
-//        var newGen: [Organism] = []
         let oldGen = await organisms.sorted(by: { $0.energy > $1.energy })
-        var elitism = min(self.elitism, maxOrganisms)
         let bestScore = oldGen.first?.energy ?? 0
         let avgScore = oldGen.reduce(0, { $0 + $1.energy }) / Float(oldGen.count)
         
@@ -262,81 +289,48 @@ extension Simulation {
         )
         
         var newGen: [Organism] = []
-//        for idx in 0..<maxOrganisms {
-//            oldGen[idx].model.destroyNetwork()
-//        }
-        
-        if avgScore < 0.95 {
-            print("Mass Extinction!!!")
-            elitism = 0
-        } else {
-            var parent = oldGen[0]
-            mutate(weights: &parent.model.weights)
-//            parent.model.createNetwork()
-            parent.energy = 1.0
-            parent.targetId = nil
-//            parent.target2Id = nil
-            parent.threatId = nil
-            newGen.append(parent)
+        let elitism = min(self.elitism, maxOrganisms)
+        for i in 0..<elitism {
+            var elite = oldGen[i]
+            elite.resetTargets()
+            elite.energy = 1.0
+            newGen.append(elite)
         }
         
+        let parentPool = Array(oldGen.prefix(max(2, oldGen.count / 2)))
+        
         // generate offspring
-        for idx in (newGen.count..<maxOrganisms) {
+        for idx in newGen.count..<maxOrganisms {
             var offspring: Organism
-            if elitism > 1 && abs(bestScore - avgScore) > .ulpOfOne {
-                var candidates = (0..<elitism).shuffled()
-                let lhs = oldGen[candidates.removeFirst()]
-                let rhs = oldGen[candidates.removeFirst()]
+            if parentPool.count >= 2 {
+                var availableParents = parentPool
+                let parent1 = selectParent(parentPool: availableParents)
+                if let index = availableParents.firstIndex(where: { $0.id == parent1.id }) {
+                    availableParents.remove(at: index)
+                }
+                let parent2 = selectParent(parentPool: availableParents)
                 
-                let pair = rhs.energy > lhs.energy ? (rhs, lhs) : (lhs, rhs)
-              
-                // Cross-over weighted toward the individual with higher score
-                let weight = Float.random(in: 0.75...1.0)
-                
-                let xInputToHiddenWeights: [Float] = zip(
-                    pair.0.model.weights.inputToHiddenWeights.map{ $0 * weight },
-                    pair.1.model.weights.inputToHiddenWeights.map{ $0 * (1 - weight) }
-                ).map(+)
-                
-                let xInputToHiddenBias: [Float] = zip(
-                    pair.0.model.weights.inputToHiddenBias.map{ $0 * weight },
-                    pair.1.model.weights.inputToHiddenBias.map{ $0 * (1 - weight)}
-                ).map(+)
-                
-                let xHiddenToOutputWeights: [Float] = zip(
-                    pair.0.model.weights.hiddenToOutputWeights.map{ $0 * weight },
-                    pair.1.model.weights.hiddenToOutputWeights.map{ $0 * (1 - weight) }
-                ).map(+)
-                
-                let xHiddenToOutputBias: [Float] = zip(
-                    pair.0.model.weights.hiddenToOutputBias.map{ $0 * weight },
-                    pair.1.model.weights.hiddenToOutputBias.map{ $0 * (1 - weight) }
-                ).map(+)
-                
-                let weights = ModelWeights(
-                    inputToHiddenWeights: xInputToHiddenWeights,
-                    inputToHiddenBias: xInputToHiddenBias,
-                    hiddenToOutputWeights: xHiddenToOutputWeights,
-                    hiddenToOutputBias: xHiddenToOutputBias
-                )
+                let weights = crossover(parent1: parent1, parent2: parent2)
              
                 offspring = Organism(
                     id: "thinking_organism_\(idx)_gen_\(generation)",
-                    model: OrganismModel(
-                        initialWeights: weights
-                    ),
-                    position: .init()
+                    model: OrganismModel( initialWeights: weights ),
+                    position: SIMD3<Float>.random(scale: scale),
+                    visibility: visibility
                 )
-                mutate(weights: &offspring.model.weights)
+                
+                if Float.random(in: 0...1) < mutationChance {
+                    mutate(weights: &offspring.model.weights)
+                }
             }
             else {
                 offspring = Organism(
                     id: "thinking_organism_\(idx)_gen_\(generation)",
                     model: OrganismModel(),
-                    position: .init()
+                    position: SIMD3<Float>.random(scale: scale),
+                    visibility: visibility
                 )
             }
-//            offspring.model.createNetwork()
             newGen.append(offspring)
         }
         
@@ -347,18 +341,18 @@ extension Simulation {
     private func mutate(weights: inout ModelWeights) {
         let chance = Float.random(in: 0...1)
         if chance < mutationChance {
-            let mutationRate = Float.random(in: 1-mutationRate...1+mutationRate)
+            let rate = Float.random(in: 1 - mutationRate...1 + mutationRate)
             let rand = Int.random(in: 0..<4)
             switch rand {
-            case 0: mutateRandom(weights: &weights.inputToHiddenWeights, rate: mutationRate)
-            case 1: mutateRandom(weights: &weights.inputToHiddenBias, rate: mutationRate)
-            case 2: mutateRandom(weights: &weights.hiddenToOutputWeights, rate: mutationRate)
-            case 3: mutateRandom(weights: &weights.hiddenToOutputBias, rate: mutationRate)
+            case 0: mutateRandom(weights: &weights.inputToHiddenWeights, rate: rate)
+            case 1: mutateRandom(weights: &weights.inputToHiddenBias, rate: rate)
+            case 2: mutateRandom(weights: &weights.hiddenToOutputWeights, rate: rate)
+            case 3: mutateRandom(weights: &weights.hiddenToOutputBias, rate: rate)
             default: break
             }
         }
 
-        if Bool.random() {
+        if Float.random(in: 0...1) < 0.2 {
             let rand = Int.random(in: 0..<4)
             switch rand {
             case 0: flipRandom(weights: &weights.inputToHiddenWeights)

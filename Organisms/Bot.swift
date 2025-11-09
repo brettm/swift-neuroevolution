@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import simd
 
 public struct Bot: Entity, Identifiable {
     
@@ -22,8 +23,8 @@ public struct Bot: Entity, Identifiable {
     public var position = SIMD3<Float>()
     public var velocity = SIMD3<Float>()
 
-    var maxSpeed: Float = 0.5 + .random(in: 0...0.5)
-    var maxAcceleration: Float = 0.25 + .random(in: 0...0.5)
+    var maxSpeed: Float = 0.05 + .random(in: 0...0.05)
+    var maxAcceleration: Float = 0.025 + .random(in: 0...0.05)
     
     init(id: String, position: SIMD3<Float> = .init()) {
         self.id = id
@@ -31,27 +32,27 @@ public struct Bot: Entity, Identifiable {
     }
     
     var currentSpeed: Float {
-        return velocity.magnitude()
+        return length(velocity)
     }
     
     mutating func think(dt: Float) {
         
         if let target = self.target {
             //  Normalizing ensures that the vector only indicates the direction without changing the organism's maximum speed.
-            let direction = self.position.vector(from: target.position).normalise()
+            let direction = normalize(target.position - self.position)
             //  Scale the normalized direction vector by the organism's maximum speed to get the desired velocity. This step is necessary to ensure that the organism moves at a speed proportional to its maximum capability.
             let dv = direction * self.maxSpeed
             //  Calculating the difference between the desired velocity and the current velocity is crucial to determine the adjustments needed to steer the organism towards the target. These differences represent the change in velocity required for alignment.
             let delta = dv - self.velocity
             //  Compute the Euclidean distance between the current velocity and the desired velocity using the Pythagorean theorem. This distance is used in the subsequent steps to compute the acceleration components.
-            let diff = delta.magnitude()
+            let diff = length(delta)
             //  Compute the acceleration components along x and y directions, considering the distance (diff) and the organism's maximum acceleration. The division by diff ensures that the acceleration scales with the distance between the current and desired velocities, allowing for smoother adjustments.
-            let acceleration =  delta / diff * self.maxAcceleration
+            let acceleration =  (delta / diff) * self.maxAcceleration * dt
             //  Updating the organism's velocity using a kinematic equation is necessary to modify its position in the simulation over time.
             self.velocity = SIMD3(
-                x: (self.velocity.x + acceleration.x * dt * dt * 0.5).clamped(to: -maxSpeed...maxSpeed),
-                y: (self.velocity.y + acceleration.y * dt * dt * 0.5).clamped(to: -maxSpeed...maxSpeed),
-                z: (self.velocity.z + acceleration.z * dt * dt * 0.5).clamped(to: -maxSpeed...maxSpeed)
+                x: (self.velocity.x + acceleration.x).clamped(to: -maxSpeed...maxSpeed),
+                y: (self.velocity.y + acceleration.y).clamped(to: -maxSpeed...maxSpeed),
+                z: (self.velocity.z + acceleration.z).clamped(to: -maxSpeed...maxSpeed)
             )
         }
     }

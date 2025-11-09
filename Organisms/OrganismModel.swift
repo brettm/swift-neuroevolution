@@ -25,7 +25,7 @@ public struct OrganismModel {
     internal var weights: ModelWeights
 
     public init(
-        shape: MLPNodeStructure = MLPNodeStructure(inputNodesCount: 8, hiddenNodesCount: 24, outputNodesCount: 4),
+        shape: MLPNodeStructure = MLPNodeStructure(inputNodesCount: 8, hiddenNodesCount: 16, outputNodesCount: 4),
         initialWeights: ModelWeights? = nil
     ) {
         let inHidCount = shape.inputNodesCount * shape.hiddenNodesCount
@@ -34,7 +34,7 @@ public struct OrganismModel {
         self.shape = shape
         self.weights = ModelWeights(
             inputToHiddenWeights: initialWeights?.inputToHiddenWeights ?? (0..<inHidCount).map { _ in .random(in: -1.0...1.0) },
-            inputToHiddenBias: initialWeights?.inputToHiddenBias ?? (0..<shape.hiddenNodesCount).map { _ in .random(in: -1.0...1.0) },
+            inputToHiddenBias: initialWeights?.inputToHiddenBias ?? (0..<shape.hiddenNodesCount).map { _ in .random(in: -0.1...0.1) },
             hiddenToOutputWeights: initialWeights?.hiddenToOutputWeights ?? (0..<hidOutCount).map { _ in .random(in: -1.0...1.0) },
             hiddenToOutputBias: initialWeights?.hiddenToOutputBias ?? (0..<shape.outputNodesCount).map { _ in .random(in: -0.1...0.1) }
         )
@@ -43,8 +43,11 @@ public struct OrganismModel {
     /// Fast forward pass using Accelerate (vDSP for matmul, vForce for tanh activation)
     public func predict(_ input: [Float]) -> [Float] {
         precondition(input.count == shape.inputNodesCount, "Input count mismatch.")
-
-        // Hidden Layer: hidden = input * W1 + B1
+        
+        // Debug: Check input ranges
+//        print("Input range: \(input.min() ?? 0) to \(input.max() ?? 0)")
+        
+        // Hidden Layer (linear)
         var hidden = [Float](repeating: 0, count: shape.hiddenNodesCount)
         weights.inputToHiddenWeights.withUnsafeBufferPointer { wPtr in
             input.withUnsafeBufferPointer { inPtr in
@@ -59,8 +62,10 @@ public struct OrganismModel {
             }
         }
         vDSP_vadd(hidden, 1, weights.inputToHiddenBias, 1, &hidden, 1, vDSP_Length(shape.hiddenNodesCount))
-
-        // Output Layer: output = hidden * W2 + B2
+        
+//        print("Hidden layer range: \(hidden.min() ?? 0) to \(hidden.max() ?? 0)")
+        
+        // Output Layer
         var output = [Float](repeating: 0, count: shape.outputNodesCount)
         weights.hiddenToOutputWeights.withUnsafeBufferPointer { wPtr in
             hidden.withUnsafeBufferPointer { hidPtr in
@@ -75,10 +80,16 @@ public struct OrganismModel {
             }
         }
         vDSP_vadd(output, 1, weights.hiddenToOutputBias, 1, &output, 1, vDSP_Length(shape.outputNodesCount))
-        // Tanh activation for output (in-place)
-        var out = output
-        var count = Int32(shape.outputNodesCount)
-        vvtanhf(&out, output, &count)
-        return out
+        
+//        print("Output pre-tanh range: \(output.min() ?? 0) to \(output.max() ?? 0)")
+        
+        // Tanh activation for output (correct!)
+        var outCount = Int32(shape.outputNodesCount)
+        vvtanhf(&output, output, &outCount)
+        
+//        print("Output final range: \(output.min() ?? 0) to \(output.max() ?? 0)")
+//        print("---")
+        
+        return output
     }
 }

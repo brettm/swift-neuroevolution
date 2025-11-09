@@ -29,7 +29,7 @@ import simd
 public struct Food: Entity {
     public func inVisibleRange<T>(of entity: T) -> Bool where T : Entity {
         let x = entity.position
-        let dir = entity.velocity.normalise()
+        let dir = normalize(entity.velocity)
         let (h, r) = (Float(2.0), Float(2.0))
         let eDir = self.position - x
         // project p onto dir to find the point's distance along the axis
@@ -51,8 +51,7 @@ enum EntityFactory {
     static func makeOrganisms(count: Int, scale: Float = 1, weights: ModelWeights? = nil) -> [Organism] {
         return (0..<count).map { idx in
             let model = weights == nil ? OrganismModel() : OrganismModel(initialWeights: weights)
-            var org = Organism(id: "thinking_organism_\(idx)", model: model, position: SIMD3.random(scale: scale))
-            return org
+            return Organism(id: "thinking_organism_\(idx)", model: model, position: SIMD3.random(scale: scale), visibility: scale)
         }
     }
     static func makeBots(count: Int, scale: Float = 1) -> [Bot] {

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import simd
 
 public struct Organism: Entity {
     
@@ -14,14 +14,16 @@ public struct Organism: Entity {
     public var energy: Float = 1.0
     public var position = SIMD3<Float>()
     public var velocity = SIMD3<Float>.random(in: -0.01...0.01)
+    public var visibility: Float
     
-    let maxSpeed: Float = 5 + .random(in: 0...1)
-    let maxAcceleration: Float = 1 + .random(in: 0...0.5)
+    let maxSpeed: Float = 1.0
+    let maxAcceleration: Float = 0.1
     
-    internal init(id: String, model: OrganismModel = OrganismModel(), position: SIMD3<Float> = .init()) {
+    internal init(id: String, model: OrganismModel = OrganismModel(), position: SIMD3<Float> = .init(), visibility: Float) {
         self.id = id
         self.position = position
         self.model = model
+        self.visibility = visibility
     }
     
     internal var targetId: String?
@@ -36,46 +38,49 @@ public struct Organism: Entity {
     internal var model: OrganismModel
     
     public var currentSpeed: Float {
-        return velocity.magnitude()
+        return length(velocity)
+    }
+    
+    mutating func resetTargets() {
+        targetId = nil
+        target2Id = nil
+        threatId = nil
+        // Reset position and velocity for new generation
+        position = SIMD3<Float>()
+        velocity = SIMD3<Float>.random(in: -0.01...0.01)
     }
     
     mutating func think(dt: Float) {
         
-        var input: [Float] = [
-            0.0, 0.0, 0.0, -1.0,
-            0.0, 0.0, 0.0, -1.0,
-//            0.0, 0.0, 0.0, -1.0
-        ]
+        var input: [Float] = []
         
         if targetId != nil {
-            let targetDirection = self.position.vector(from: targetPosition).normalise()
-            let distance = self.position.distance(from: targetPosition)
-            (input[0], input[1], input[2]) = (targetDirection.x, targetDirection.y, targetDirection.z)
-            input[3] = distance/10.0
+            let toTarget = targetPosition - self.position
+            let distance = length(toTarget)
+            let direction = toTarget / distance
+            let normalisedDistance = min(distance / visibility, 1.0)
+            input.append(contentsOf: [direction.x, direction.y, direction.z, normalisedDistance])
+        } else {
+            input.append(contentsOf: [0,0,0,-1])
         }
         
         if threatId != nil {
-            let threatDirection = self.position.vector(from: threatPosition).normalise()
-            let distance = self.position.distance(from: threatPosition)
-            (input[4], input[5], input[6]) = (threatDirection.x, threatDirection.y, threatDirection.z)
-            input[7] = distance / 10.0
+            let toThreat = threatPosition - self.position
+            let distance = length(toThreat)
+            let direction = toThreat / distance
+            let normalisedDistance = min(distance / visibility, 1.0)
+            input.append(contentsOf: [direction.x, direction.y, direction.z, normalisedDistance])
+        } else {
+            input.append(contentsOf: [0,0,0,-1])
         }
         
-//        if target2Id != nil {
-//            let targetDirection = self.position.vector(from: target2Position).normalise()
-//            let distance = self.position.distance(from: target2Position)
-//            (input[8], input[9], input[10]) = (targetDirection.x, targetDirection.y, targetDirection.z)
-//            input[11] = distance / 10.0
-//        }
-        
-        let direction = model.predict( Array(input[0...7]) )
-        let (ax, ay, az, speed) = (direction[0], direction[1], direction[2], direction[3])
-        self.velocity = SIMD3(
-            x: (self.velocity.x + ax * dt * dt * 0.5 * speed).clamped(to: -maxSpeed...maxSpeed),
-            y: (self.velocity.y + ay * dt * dt * 0.5 * speed).clamped(to: -maxSpeed...maxSpeed),
-            z: (self.velocity.z + az * dt * dt * 0.5 * speed).clamped(to: -maxSpeed...maxSpeed)
-        )
+        let output = model.predict( Array(input[0...7]) )
+        let acceleration = SIMD3<Float>(output[0], output[1], output[2])
+        let throttle = (output[3] + 1) * 0.5 // Convert from [-1,1] to [0,1] for max speed/acceleration calculations
+        self.velocity += acceleration * dt * maxAcceleration * throttle
+        self.velocity = clamp(velocity, min: -maxSpeed, max: maxSpeed)
     }
+        
 }
 
 

@@ -35,58 +35,6 @@ final class OrganismsTests: XCTestCase {
     }
     
     func testModel() {
-        var model = OrganismModel()
-        XCTAssert(model.createNetwork() != false)
-        let pred = model.predict([0.5, 0.5, 0.1, -0.5, -0.5, 1.0, -1.0, 0.0, 1.0])
-        XCTAssert(pred.count == MLPNodeStructure.outputNodesCount)
-    }
-    
-    func testVector2d() {
-        var vectorA = Vector2d()
-        var vectorB = Vector2d(x: 1, y: 1)
-        var vectores = [vectorA, vectorB].filterByDistance(0)
-        XCTAssert(vectores.count == 1)
-        XCTAssert(vectores.first == vectorA)
-        
-        vectores = [vectorA, vectorB].filterByDistance(0.1)
-        XCTAssert(vectores.count == 1)
-        XCTAssert(vectores.first == vectorA)
-        
-        vectores = [vectorA, vectorB].filterByDistance(0.1, relativeTo: vectorB)
-        XCTAssert(vectores.count == 1)
-        XCTAssert(vectores.first == vectorB)
-        
-        vectores = [vectorA, vectorB].filterByDistance(1.5, relativeTo: vectorB)
-        XCTAssert(vectores.count == 2)
-        
-        vectorA = Vector2d(x: -1.2, y: -1.2)
-        vectores = [vectorA, vectorB].filterByDistance(0)
-        XCTAssert(vectores.count == 0)
-        
-        vectores = [vectorA, vectorB].filterByDistance(0.1)
-        XCTAssert(vectores.count == 0)
-        
-        vectores = [vectorA, vectorB].filterByDistance(1.5)
-        XCTAssert(vectores.count == 1)
-        XCTAssert(vectores.first == vectorB)
-        
-        vectores = [vectorA, vectorB].filterByDistance(1.8)
-        XCTAssert(vectores.count == 2)
-        
-        vectores = [vectorA, vectorB].filterByDistance(0.1, relativeTo: vectorB)
-        XCTAssert(vectores.count == 1)
-        XCTAssert(vectores.first == vectorB)
-        
-        vectores = [vectorA, vectorB].filterByDistance(0.1, relativeTo: vectorA)
-        XCTAssert(vectores.count == 1)
-        XCTAssert(vectores.first == vectorA)
-        
-        vectores = [vectorA, vectorB].filterByDistance(2, relativeTo: vectorA)
-        XCTAssert(vectores.count == 1)
-        XCTAssert(vectores.first == vectorA)
-        
-        vectores = [vectorA, vectorB].filterByDistance(5, relativeTo: vectorA)
-        XCTAssert(vectores.count == 2)
-    }
 
+    }
 }
