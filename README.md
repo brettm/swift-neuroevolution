@@ -2,7 +2,7 @@
 
 A real-time neuroevolution simulation built in SwiftUI and Swift Charts. Watch organisms evolve neural networks to survive in a dynamic environment with food sources and predator bots.
 
-![Simulation Demo](demo.gif)
+<img width="791" height="745" alt="Screenshot 2025-11-11 at 10 03 47" src="https://github.com/user-attachments/assets/07641390-c796-4fb2-bd5b-c09a76e9f41d" />
 
 ## Features
 
@@ -32,7 +32,7 @@ MLP Structure: 8 → 32 → 4
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `maxOrganisms` | 100 | Population size |
+| `maxOrganisms` | 50 | Population size |
 | `mutationRate` | 0.6 | Weight mutation intensity |
 | `friction` | 0.6 | Movement physics (lower = more momentum) |
 | `visibility` | 4.5 | How far organisms can see |
