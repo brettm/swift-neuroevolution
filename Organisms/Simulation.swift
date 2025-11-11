@@ -60,15 +60,15 @@ public struct Simulation {
     public var evolutionTime: Float = 60
     public var elitism: Int = 3
     
-    public var mutationChance: Float = 0.6
-    public var mutationRate: Float = 0.4
+    public var mutationChance: Float = 0.4
+    public var mutationRate: Float = 0.2
 
-    public var food: Float = 4.0
-    public var friction: Float = 0.7
+    public var food: Float = 3.0
+    public var friction: Float = 0.6
     public var botDamage: Float = 0.9
-    public var visibility: Float = 4.0
+    public var visibility: Float = 4.5
     
-    public var foodCollisionDistance: Float = 0.15
+    public var foodCollisionDistance: Float = 0.17
     public var botCollisionDistance: Float = 0.1
     
     // Best and avg. scores for each gen
@@ -77,6 +77,8 @@ public struct Simulation {
     
     private(set) var modelWeights: ModelWeights?
     private(set) var modelStructure: MLPNodeStructure?
+    
+    private let speciationManager = SpeciationManager()
     
     init(maxOrganisms: Int = 50, maxBots: Int = 3, maxFood: Int = 100, scale: Float = 2.0, modelWeights: ModelWeights? = nil, modelStructure: MLPNodeStructure? = nil) {
         self.maxOrganisms = maxOrganisms
@@ -145,13 +147,6 @@ extension Simulation {
             .filter{ $0.1 < visibility }
             .sorted{ $0.1 > $1.1 }
     
-//        // Debug logging
-//            if Int.random(in: 0...200) == 0 && !visibleFoods.isEmpty {
-//                let closest = visibleFoods.last!
-//                let farthest = visibleFoods.first!
-//                print("Org \(organism.id): \(visibleFoods.count) foods visible, closest=\(closest.1), farthest=\(farthest.1), targeting=\(closest.1)")
-//            }
-        
         if !visibleFoods.isEmpty {
             let foodDistance = visibleFoods.removeLast()
             organism.targetId = foodDistance.0.id
@@ -223,7 +218,6 @@ extension Simulation {
     }
     
     private func updateBots(dt: Float) async {
-        
         await withTaskGroup(of: Void.self) { taskGroup in
             for (idx, bot) in await bots.enumerated() {
                 Task {
@@ -268,32 +262,33 @@ extension Simulation {
     }
     
     func selectParent(parentPool: [Organism]) -> Organism {
-        // Tournament selection works with negative values
         let tournamentSize = min(5, parentPool.count)
         let tournament = (0..<tournamentSize).map { _ in parentPool.randomElement()! }
         return tournament.max(by: { $0.energy < $1.energy })!
     }
     
-    private mutating func evolve() async {
-        let oldGen = await organisms.sorted(by: { $0.energy > $1.energy })
-        let bestScore = oldGen.first?.energy ?? 0
-        let avgScore = oldGen.reduce(0, { $0 + $1.energy }) / Float(oldGen.count)
-        
-        scores.append(
+    private mutating func score(gen: [Organism]) async {
+        let bestScore = gen.first?.energy ?? 0
+        let avgScore = gen.reduce(0, { $0 + $1.energy }) / Float(gen.count)
+        self.scores.append(
             GenerationScore(
                 generation: self.generation,
                 bestScore: bestScore,
                 avgScore: avgScore,
                 botsScore: await bots.reduce(0.0, { $0 + $1.energy }) / Float(botStore.valueCount)
-            )
-        )
+        ))
+    }
+    
+    private mutating func evolve() async {
+        
+        let oldGen = await organisms.sorted(by: { $0.energy > $1.energy })
+        await score(gen: oldGen)
         
         var newGen: [Organism] = []
         let elitism = min(self.elitism, maxOrganisms)
         for i in 0..<elitism {
             var elite = oldGen[i]
-            elite.resetTargets()
-            elite.energy = 1.0
+            elite.reset()
             newGen.append(elite)
         }
         

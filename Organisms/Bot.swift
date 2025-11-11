@@ -47,7 +47,7 @@ public struct Bot: Entity, Identifiable {
             //  Compute the Euclidean distance between the current velocity and the desired velocity using the Pythagorean theorem. This distance is used in the subsequent steps to compute the acceleration components.
             let diff = length(delta)
             //  Compute the acceleration components along x and y directions, considering the distance (diff) and the organism's maximum acceleration. The division by diff ensures that the acceleration scales with the distance between the current and desired velocities, allowing for smoother adjustments.
-            let acceleration =  (delta / diff) * self.maxAcceleration * dt
+            let acceleration =  delta / diff * self.maxAcceleration * dt
             //  Updating the organism's velocity using a kinematic equation is necessary to modify its position in the simulation over time.
             self.velocity = SIMD3(
                 x: (self.velocity.x + acceleration.x).clamped(to: -maxSpeed...maxSpeed),

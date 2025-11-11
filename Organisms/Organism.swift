@@ -8,12 +8,14 @@
 import Foundation
 import simd
 
+let kDefaultEnergy: Float = 1.0
+
 public struct Organism: Entity {
     
     public var id: String
-    public var energy: Float = 1.0
+    public var energy: Float = kDefaultEnergy
     public var position = SIMD3<Float>()
-    public var velocity = SIMD3<Float>.random(in: -0.01...0.01)
+    public var velocity = SIMD3<Float>()
     public var visibility: Float
     
     let maxSpeed: Float = 1.0
@@ -41,13 +43,14 @@ public struct Organism: Entity {
         return length(velocity)
     }
     
-    mutating func resetTargets() {
+    mutating func reset() {
         targetId = nil
         target2Id = nil
         threatId = nil
+        energy = kDefaultEnergy
         // Reset position and velocity for new generation
         position = SIMD3<Float>()
-        velocity = SIMD3<Float>.random(in: -0.01...0.01)
+        velocity = SIMD3<Float>()
     }
     
     mutating func think(dt: Float) {

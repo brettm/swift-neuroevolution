@@ -10,10 +10,10 @@ import Foundation
 var bestOrg: Organism?
 var bestWeights: ModelWeights?
 var bestScore: Float = 0
-var nodes = 16
-var structure = MLPNodeStructure(inputNodesCount: 4, hiddenNodesCount: nodes, outputNodesCount: 4)
+var nodes = 32
+var structure = MLPNodeStructure(inputNodesCount: 8, hiddenNodesCount: nodes, outputNodesCount: 4)
 var active = true
-var sim = Simulation(maxOrganisms: 50, maxBots: 5, maxFood: 100, modelStructure: structure)
+var sim = Simulation(maxOrganisms: 50, maxBots: 2, maxFood: 100, modelStructure: structure)
 sim.onEvolve = { sim in
     print(sim.scores.last!)
 //    if sim.generation >= 200 { active = false }

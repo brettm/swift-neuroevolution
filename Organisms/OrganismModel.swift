@@ -40,12 +40,9 @@ public struct OrganismModel {
         )
     }
 
-    /// Fast forward pass using Accelerate (vDSP for matmul, vForce for tanh activation)
+    // Fast forward pass using Accelerate (vDSP for matmul, vForce for tanh activation)
     public func predict(_ input: [Float]) -> [Float] {
         precondition(input.count == shape.inputNodesCount, "Input count mismatch.")
-        
-        // Debug: Check input ranges
-//        print("Input range: \(input.min() ?? 0) to \(input.max() ?? 0)")
         
         // Hidden Layer (linear)
         var hidden = [Float](repeating: 0, count: shape.hiddenNodesCount)
@@ -63,8 +60,6 @@ public struct OrganismModel {
         }
         vDSP_vadd(hidden, 1, weights.inputToHiddenBias, 1, &hidden, 1, vDSP_Length(shape.hiddenNodesCount))
         
-//        print("Hidden layer range: \(hidden.min() ?? 0) to \(hidden.max() ?? 0)")
-        
         // Output Layer
         var output = [Float](repeating: 0, count: shape.outputNodesCount)
         weights.hiddenToOutputWeights.withUnsafeBufferPointer { wPtr in
@@ -81,14 +76,9 @@ public struct OrganismModel {
         }
         vDSP_vadd(output, 1, weights.hiddenToOutputBias, 1, &output, 1, vDSP_Length(shape.outputNodesCount))
         
-//        print("Output pre-tanh range: \(output.min() ?? 0) to \(output.max() ?? 0)")
-        
-        // Tanh activation for output (correct!)
+        // Tanh activation for output
         var outCount = Int32(shape.outputNodesCount)
         vvtanhf(&output, output, &outCount)
-        
-//        print("Output final range: \(output.min() ?? 0) to \(output.max() ?? 0)")
-//        print("---")
         
         return output
     }

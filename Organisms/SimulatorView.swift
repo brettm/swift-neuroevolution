@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-let modelStructure = MLPNodeStructure(inputNodesCount: 8, hiddenNodesCount: 16, outputNodesCount: 4)
+let modelStructure = MLPNodeStructure(inputNodesCount: 8, hiddenNodesCount: 32, outputNodesCount: 4)
 
 @Observable
 class SimulatorViewModel {
